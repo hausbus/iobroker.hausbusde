@@ -33,6 +33,7 @@
     "readme": "https://github.com/hausbus/ioBroker.hausbusde/README.md",
     "loglevel": "info",
     "type": "hardware",
+	"connectionType": "local",
     "keywords": 
     [
       "Smarthome",
