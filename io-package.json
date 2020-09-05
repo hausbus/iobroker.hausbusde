@@ -30,7 +30,7 @@
     "platform": "Javascript/Node.js",
     "mode": "daemon",
     "messagebox": true,
-    "readme": "https://github.com/hausbus/ioBroker.template/README.md",
+    "readme": "https://github.com/hausbus/ioBroker.hausbusde/README.md",
     "loglevel": "info",
     "type": "hardware",
     "keywords": 
@@ -41,7 +41,7 @@
       "Taster"
     ],
     "icon": "haus-bus-logo.jpg",
-    "extIcon": "https://github.com/hausbus/ioBroker.template/master/admin/haus-bus-logo.jpg"
+    "extIcon": "https://github.com/hausbus/ioBroker.hausbusde/master/admin/haus-bus-logo.jpg"
   },
   "native": 
   {
