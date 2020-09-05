@@ -1,0 +1,115 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css" />
+
+    <script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
+    <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+    <script type="text/javascript" src="words.js"></script>
+
+    <script type="text/javascript">
+        var bridges = [];
+
+        function setValue(id, value, onChange) {
+            // example: select elements with id=key and class=value and insert value
+            if ($('#' + id + '.value').attr('type') === 'checkbox') {
+                $('#' + id + '.value').prop('checked', value).change(function() {
+                    onChange();
+                });
+            } else {
+                $('#' + id + '.value').val(value).change(function() {
+                    onChange();
+                }).keyup(function() {
+                    $(this).trigger('change');
+                });
+            }
+        }
+
+        // the function loadSettings has to exist ...
+        function load(settings, onChange) {
+            for (var key in settings) {
+                setValue(key, settings[key], onChange);
+            }
+            onChange(false);
+        }
+
+        // ... and the function save has to exist.
+        // you have to make sure the callback is called with the settings object as first param!
+        function save(callback) {
+            // example: select elements with class=value and build settings object
+            var obj = {};
+            $('.value').each(function () {
+                var $this = $(this);
+                if ($this.attr('type') === 'checkbox') {
+                    obj[$this.attr('id')] = $this.prop('checked');
+                } else {
+                    obj[$this.attr('id')] = $this.val();
+                }
+            });
+            $('.check').each(function () {
+                var $this = $(this);
+                obj[$this.attr('id')] = $this.is('checked');
+            });
+            callback(obj);
+        }
+    </script> 
+
+    <style>
+        #settings tr {
+            line-height: 2.5em;
+        }
+    </style>
+</head>     
+<body>
+    <!-- you have to put your config page in a div with id adapter-container -->
+	
+    <div id="adapter-container">
+        <table width=100%>
+		 <tr bgcolor=white>
+		  <td>
+		    <table cellspacing=0 cellpadding=0 border=0>
+			 <tr><td><img src="/adapter/hausbusde/haus-bus-logo.jpg" width="64" height="64"></td>
+			     <td width=50>&nbsp; </td>
+				 <td valign=bottom><h3 class="translate">
+				 <div style="font-size: 12px;font-family: 'Segoe UI',Tahoma,Arial,'Courier New' !important;font-weight: 400;font-color: 909090">
+				 <b>IO Broker Adapter für Haus-Bus.de Komponenten</b></td>
+				 </div>
+		      </tr>
+			 </table>
+		  </td>
+		 </tr>
+         <tr><td><br><br></td></tr>  
+		 <tr>
+		  <td>
+		    <table cellspacing=0 cellpadding=0 border=0>
+		    <tr>
+		     <td width=10> </td>
+		     <td><div style="font-size: 12px;font-family: 'Segoe UI',Tahoma,Arial,'Courier New' !important;font-weight: 400;font-color: 909090">
+		      <b>Konfiguration</b><br>
+ 		      <li> Dieser Adapter funktioniert vollkommen ohne Konfiguration.<br>
+ 		      <li> Die Module werden per UDP Broadcast gefunden und automatisch eingerichtet <br>
+		      <li> Neu eingeschaltete Module werden ebenfalls erkannt und automatisch eingebunden<br>
+		      <li> Eine erneute Modulsuche kann mit der Funktion <i>research_devices</i> gestartet werden, was aber nicht notwendig sein sollte.<br>
+		      <li> Konfigurationen der einzelen Sensoren oder Aktoren werden direkt über IO Broker States vorgenommen<br>
+			  <br><br><br>
+		      <b>Dokumentation</b><br>
+		      Die Funktion aller Sensoren und Aktoren, sowie deren Abbildung auf IO Broker States wird online dokumentiert unter <br>
+		      <u><font color=black><a href="http://www.haus-bus.de/iobroker" target="_blank">www.haus-bus.de/iobroker</a></u>.
+			  </div>
+		     </td>
+ 		    </tr>
+		   </table>
+		  </td>
+		 </tr>
+		</table>
+		    
+        <div id="settings">
+            
+        </div>
+    </div>
+</body>
+</html>

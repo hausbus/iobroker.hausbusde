@@ -1,0 +1,49 @@
+{
+  "name": "hausbusde",
+  "version": "0.1.0",
+  "description": "Adapter for ioBroker that communicates with haus-bus.de components",
+  "main": "main.js",
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hausbus/ioBroker.template"
+  },
+  "keywords": [
+    "Smarthome",
+    "Relaismodule",
+    "Switches",
+    "Dimmer"
+  ],
+  "author": {
+    "name": "Hermann Hoeschen",
+    "email": "info@haus-bus.de"
+  },
+  "contributors": [
+    {
+      "name": "Hermann Hoeschen",
+      "email": "info@haus-bus.de"
+    }
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/hausbus/ioBroker.template/issues"
+  },
+  "homepage": "http://www.haus-bus.de",
+  "readme": "https://github.com/hausbus/ioBroker.template/blob/master/README.md",
+  "dependencies": {
+    "dgram": "^1.0.1",
+    "os": "^0.1.1",
+    "@iobroker/adapter-core": "^1.0.3"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-replace": "^1.0.1",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-jscs": "^3.0.1",
+    "grunt-http": "^2.2.0",
+    "mocha": "^4.1.0",
+    "chai": "^4.1.2"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "common": 
+  {
+    "name": "hausbusde",
+    "version": "0.1.0",
+    "news": 
+    {
+      "0.1.0": 
+      {
+        "en": "initial commit",
+        "de": "initial commit"
+      }
+    },
+    "title": "Haus-Bus.de",
+    "titleLang": 
+     {
+      "en": "Haus-Bus.de",
+      "de": "Haus-Bus.de"
+     },
+    "desc": 
+    {
+      "en": "Communicates with Haus-Bus.de components",
+      "de": "Kommuniziert mit Haus-Bus.de Komponenten"
+    },
+    "authors": 
+    [
+      "Hermann Hoeschen <info@haus-bus.de>"
+    ],
+    "license": "Apache 2.0",
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "messagebox": true,
+    "readme": "https://github.com/hausbus/ioBroker.template/README.md",
+    "loglevel": "info",
+    "type": "hardware",
+    "keywords": 
+    [
+      "Smarthome",
+      "Relaismodul",
+      "Dimmer",
+      "Taster"
+    ],
+    "icon": "haus-bus-logo.jpg",
+    "extIcon": "https://github.com/hausbus/ioBroker.template/master/admin/haus-bus-logo.jpg"
+  },
+  "native": 
+  {
+    "host": "0.0.0.0"
+  },
+  "objects": [
+  ],
+  "instanceObjects": [
+  ]
+}
