@@ -9,6 +9,8 @@ var utils = require('@iobroker/adapter-core');
 var ip = require("ip");
 var dgram = require('dgram');
 var os = require('os');
+var http = require('http');
+var fs = require('fs');
 
 // create the adapter object
 var adapter = utils.Adapter('hausbusde');
@@ -45,6 +47,7 @@ var MODUL_ID_8_RELAIS=5;
 
 var MODULES = {}; // Alle Haus-Bus Module
 var CLASSES = {}; // Alle Haus-Bus Klassen
+var FIRMWARE_IDS = {}; // Firmwaretypen
 var INSTANCES = {}; // Alle Haus-Bus Instanzen
 var CONFIG_BITS = {}; // Konfigurations Bitmasken
 
@@ -52,9 +55,13 @@ var MY_DEVICE_ID = 12223;
 var DATA_START = 15;
 
 var CONTROLLER_RESEACH_DEVICES = "research_devices";
+var CONTROLLER_CHECK_FIRMWARE_UPDATES = "check_firmware_updates";
+
 var CONTROLLER_FKT_STATE_ONLINE = "online";
 var CONTROLLER_FKT_VERSION = "version";
 var CONTROLLER_FKT_RESET = "reset";
+var CONTROLLER_CFG_NEWEST_FIRMWARE = "newest_available_firmware";
+var CONTROLLER_CFG_UPDATE_FIRMWARE = "update_firmware";
 
 var ETHERNET_FKT_IP = "ip";
 var ETHERNET_CFG_FIXED_IP_DHCP = "fixed_ip_or_dhcp";
@@ -165,6 +172,15 @@ var DIMMER_DIMMING_IDLE = "IDLE";
 var DIMMER_DIMMING_UP = "DIMMING_UP";
 var DIMMER_DIMMING_DOWN = "DIMMING_DOWN";
 
+var FIRMWARE_ID_AR8 = "AR8";
+var FIRMWARE_ID_MS6 = "MS6";
+var FIRMWARE_ID_SD6 = "SD6";
+var FIRMWARE_ID_SD485 = "SD485";
+var FIRMWARE_ID_SONOFF = "SONOFF";
+var FIRMWARE_ID_S0_Reader = "S0_Reader";
+var FIRMWARE_ID_ESP = "ESP";
+var FIRMWARE_ID_HBC = "HBC";
+	
 var CHANNEL_CONFIG = "Konfiguration";
 
 var udpSocket;
@@ -181,9 +197,10 @@ var ioBrokerStates = {}; // Alle an IO Broker veröffentlichte States
 var firmwareTypes = {};
 var moduleTypes = {};
 var moduleVersions = {};
+var onlineVersions = {};
 var objectIds = {};
 var configurations = {};
-
+var pongCallback = {};
 
 // unloading
 adapter.on('unload', function (callback) 
@@ -252,12 +269,62 @@ function main()
 	  
 	  adapter.subscribeStates(adapter.namespace+".*");
 	  adapter.setObjectNotExists(adapter.namespace+"."+CONTROLLER_RESEACH_DEVICES,{type: 'state',common: {name: CONTROLLER_RESEACH_DEVICES,type: "boolean",role: "button"},native: {}});
+	  adapter.setObjectNotExists(adapter.namespace+"."+CONTROLLER_CHECK_FIRMWARE_UPDATES,{type: 'state',common: {name: CONTROLLER_CHECK_FIRMWARE_UPDATES,type: "boolean",role: "button"},native: {}});
 
 	  searchAllDevices();
+	  setTimeout(readFirmwareVersions, 10000);
 	  checkAliveTimer = setTimeout(checkAlive, 20000); // alle 20 Sekunden pingen wir einen Controller an
     }
   });
 }
+
+function readFirmwareVersions()
+{
+  for (var firmwareId in FIRMWARE_IDS) 
+  {
+	  var firmwareName = FIRMWARE_IDS[firmwareId];
+	  if (typeof firmwareName!="string" || firmwareName.length<2)
+		  continue;
+	  if (firmwareName == FIRMWARE_ID_S0_Reader)
+		  continue;
+
+	  readFirmwareVersionFor(firmwareId, firmwareName);
+  }
+}
+
+function readFirmwareVersionFor(firmwareId, firmwareName)
+{
+      var options = 
+      {
+        host: 'www.haus-bus.de',
+        path: '/'+firmwareName+'.chk'
+      };
+   
+      http.request(options, function(response) 
+      {
+        var str = '';
+        response.on('data', function (chunk) {str += chunk;});
+        response.on('end', function () 
+    	{
+		  var parts = str.split("-");
+		  
+		  if (typeof onlineVersions[firmwareId]=="undefined") onlineVersions[firmwareId]={};
+		  onlineVersions[firmwareId].version = (""+parts[0]).trim();
+		  onlineVersions[firmwareId].date = (""+parts[1]).trim();
+		  info("Online version "+firmwareName+": "+str);
+		  
+          for (var deviceId in firmwareTypes) 
+          {
+		     var myFirmwareId = FIRMWARE_IDS[firmwareTypes[deviceId]];
+			 if (myFirmwareId == firmwareId)
+			 {
+		       var myId = getIoBrokerId(deviceId,CLASS_ID_CONTROLLER,1,CONTROLLER_CFG_NEWEST_FIRMWARE, CHANNEL_CONFIG);
+		       setStateIoBroker(myId, firmwareName+" "+str, CHANNEL_CONFIG);
+			 }
+		  }
+		});
+	  }).end();
+}	  
 
 function checkAlive()
 {
@@ -455,7 +522,7 @@ function handleIncomingMessage(message, remote)
 			else if (functionId==129) hwControllerReceivedRemoteObjects(sender, receiver, message, dataLength);		
 			else if (functionId==202) hwControllerReceivedEvStarted(sender);
 			else if (functionId==131) hwControllerReceivedConfiguration(sender, receiver, message, dataLength);
-			else if (functionId==199) debug("controller pong "+senderDeviceId);
+			else if (functionId==199) hwControllerReceivedPong(sender);
 		}
         else if (classIdSender == CLASS_ID_FEUCHTESENSOR)
 		{
@@ -540,6 +607,13 @@ function aFunctionCall(ioBrokerId, newValue)
   {
     info("Call: "+CONTROLLER_RESEACH_DEVICES); 
     searchAllDevices();
+	return;
+  }
+  
+  if (state == CONTROLLER_CHECK_FIRMWARE_UPDATES)
+  {
+    info("Call: "+CONTROLLER_CHECK_FIRMWARE_UPDATES); 
+    readFirmwareVersions();
 	return;
   }
   
@@ -630,6 +704,11 @@ function aFunctionCall(ioBrokerId, newValue)
   {
     if (state == CONTROLLER_FKT_RESET) hwControllerReset(objectId);
 	else if (state == ETHERNET_CFG_FIXED_IP_DHCP) hwEthernetSetConfiguration(newValue, getObjectId(deviceId, CLASS_ID_ETHERNET,1));
+	else if (state == CONTROLLER_CFG_UPDATE_FIRMWARE)
+	{
+		if (newValue=="UPDATE") hwControllerUpdateFirmware(objectId);
+		else error("Invalid value. To update firmware please enter 'UPDATE'.");
+	}
   }
   else if (classId == CLASS_ID_LED)
   {
@@ -2577,7 +2656,7 @@ function hwEthernetReceivedIp(sender, receiver, message, dataLength)
 	
 	info("ethernet ip "+ip+" <- "+objectIdToString(sender));	
 	
-	var myId = getIoBrokerId(deviceId,CLASS_ID_CONTROLLER,instanceId,ETHERNET_FKT_IP);
+	var myId = getIoBrokerId(deviceId,CLASS_ID_CONTROLLER,instanceId,ETHERNET_FKT_IP,CHANNEL_CONFIG);
 	setStateIoBroker(myId, ip);
 }
 
@@ -2678,7 +2757,7 @@ function hwEthernetReceivedConfiguration(sender, receiver, message, dataLength)
 
 	debug("Ethernet: "+dump(configurations[sender])+" <- "+objectIdToString(sender));	
 	
-	var myId = getIoBrokerId(deviceId,CLASS_ID_CONTROLLER,instanceId,ETHERNET_CFG_FIXED_IP_DHCP);
+	var myId = getIoBrokerId(deviceId,CLASS_ID_CONTROLLER,instanceId,ETHERNET_CFG_FIXED_IP_DHCP,CHANNEL_CONFIG);
 	if (isBitSet(options, CONFIG_BITS[CLASS_ID_ETHERNET]["options"][ETHERNET_CFG_FIXED_IP_DHCP])) ip="DHCP"
     setStateIoBroker(myId, ip);
 
@@ -2706,15 +2785,7 @@ function hwControllerReceivedModuleId(sender, receiver, message, dataLength)
 	moduleVersions[deviceId]=version;
 
 	var byteFirmwareId = message[pos++];
-	var firmwareId="";
-	if (byteFirmwareId==1) firmwareId="AR8";
-	else if (byteFirmwareId==2) firmwareId="MS6";
-	else if (byteFirmwareId==3) firmwareId="SD6";
-	else if (byteFirmwareId==4) firmwareId="SD485";
-	else if (byteFirmwareId==5) firmwareId="SONOFF";
-	else if (byteFirmwareId==6) firmwareId="S0 Reader";
-	else if (byteFirmwareId==7) firmwareId="ESP";
-	else if (byteFirmwareId==8) firmwareId="HBC";
+	var firmwareId=FIRMWARE_IDS[byteFirmwareId];
 	
 	firmwareTypes[deviceId]=firmwareId;
 	
@@ -2801,8 +2872,8 @@ function hwControllerReceivedRemoteObjects(sender, receiver, message, dataLength
 	   if (classId == CLASS_ID_ETHERNET)
 	   {
 		   var ethernetObjectId = getObjectId(deviceId, classId, instanceId);
-		   addStateIoBroker(ETHERNET_FKT_IP, 'string', 'info.ip', deviceId, CLASS_ID_CONTROLLER, instanceId, false, true, hwEthernetGetCurrentIp(ethernetObjectId));
-		   addStateIoBroker(ETHERNET_CFG_FIXED_IP_DHCP, 'state', 'text', deviceId, CLASS_ID_CONTROLLER, instanceId, true, true, hwEthernetGetConfiguration(ethernetObjectId));
+		   addStateIoBroker(ETHERNET_FKT_IP, 'string', 'info.ip', deviceId, CLASS_ID_CONTROLLER, instanceId, false, true, hwEthernetGetCurrentIp(ethernetObjectId), CHANNEL_CONFIG);
+		   addStateIoBroker(ETHERNET_CFG_FIXED_IP_DHCP, 'state', 'text', deviceId, CLASS_ID_CONTROLLER, instanceId, true, true, hwEthernetGetConfiguration(ethernetObjectId), CHANNEL_CONFIG);
 	   }
 
 	   if (!CLASSES[classId]) return;
@@ -2850,7 +2921,7 @@ function hwControllerReceivedConfiguration(sender, receiver, message, dataLength
     var moduleId=-1;
 	
     var firmwareType = firmwareTypes[deviceId];
-	if (firmwareType == "HBC")
+	if (firmwareType == FIRMWARE_ID_HBC)
 	{
 		if (fcke==0) moduleId = MODUL_ID_4_DIMMER;
 		else if (fcke==0x8) moduleId = MODUL_ID_8_RELAIS;
@@ -2862,7 +2933,7 @@ function hwControllerReceivedConfiguration(sender, receiver, message, dataLength
 		else if (fcke==0x1B) moduleId = MODUL_ID_1_TASTER;
 		else if (fcke==0x20) moduleId = MODUL_ID_32_IO;
 	}
-	else if (firmwareType == "SD485")
+	else if (firmwareType == FIRMWARE_ID_SD485)
 	{
 		if (fcke==30) moduleId = MODUL_ID_6_TASTER;
 		else if (fcke==40) moduleId = MODUL_ID_24_UP_IO;
@@ -2873,7 +2944,7 @@ function hwControllerReceivedConfiguration(sender, receiver, message, dataLength
 		else if (fcke==43) moduleId = MODUL_ID_4_DIMMER;
 		else if (fcke==45) moduleId = MODUL_ID_4_DIMMER;
 	}
-	else if (firmwareType == "AR8")
+	else if (firmwareType == FIRMWARE_ID_AR8)
 	{
 		if (fcke==48) moduleId = MODUL_ID_8_RELAIS;
 	}
@@ -2974,8 +3045,11 @@ function addIoBrokerStatesForInstance(deviceId, classId, instanceId)
    if (classId == CLASS_ID_CONTROLLER)
    {
 	  addStateIoBroker(CONTROLLER_FKT_STATE_ONLINE, 'boolean', 'indicator.reachable', deviceId, classId, instanceId, false, true, true);
-	  addStateIoBroker(CONTROLLER_FKT_VERSION, 'config', 'text', deviceId, classId, instanceId, false, true, firmwareTypes[deviceId]+" "+moduleVersions[deviceId]);
+	  addStateIoBroker(CONTROLLER_FKT_VERSION, 'string', 'text', deviceId, classId, instanceId, false, true, firmwareTypes[deviceId]+" "+moduleVersions[deviceId]);
 	  addStateIoBroker(CONTROLLER_FKT_RESET, 'boolean', 'button', deviceId, classId, instanceId, true, false);
+
+	  addStateIoBroker(CONTROLLER_CFG_NEWEST_FIRMWARE, 'string', 'text', deviceId, classId, instanceId, false, true,"",CHANNEL_CONFIG);
+	  addStateIoBroker(CONTROLLER_CFG_UPDATE_FIRMWARE, 'string', 'text', deviceId, classId, instanceId, true, false,"to_update_enter_the_word:UPDATE",CHANNEL_CONFIG);
    }
    else if (classId == CLASS_ID_SCHALTER)
    {
@@ -3109,6 +3183,108 @@ function hwControllerReset(receiverObjectId)
     setStateIoBroker(getIoBrokerId(getDeviceId(receiverObjectId),CLASS_ID_CONTROLLER,1,CONTROLLER_FKT_STATE_ONLINE), false);
 }
 
+function hwControllerReceivedPong(sender)
+{
+	debug("controller pong "+sender);
+	
+	var deviceId = getDeviceId(sender);
+	
+	var myCallback = pongCallback[deviceId];
+	if (myCallback!=null)
+	{
+		pongCallback[deviceId]=null;
+		myCallback;
+	}
+}
+
+function hwControllerUpdateFirmware(receiverObjectId)
+{
+	info("Update Firmware -> "+objectIdToString(receiverObjectId));
+
+    var deviceId = getDeviceId(receiverObjectId);
+	var myFirmwareVersion = moduleVersions[deviceId];
+    var myFirmwareId = FIRMWARE_IDS[firmwareTypes[deviceId]];
+    var myStatusID = getIoBrokerId(deviceId, CLASS_ID_CONTROLLER, 1, CONTROLLER_CFG_UPDATE_FIRMWARE, CHANNEL_CONFIG);
+	
+	if (typeof onlineVersions[myFirmwareId]=="undefined")
+	{
+	  if (myFirmwareVersion!=onlineFirmwareVersion)
+	  {
+		setStateIoBroker(myStatusID, "ONLINE VERSION UNKNOWN");
+		return;
+	  }
+	}
+		
+	var onlineFirmwareVersion = onlineVersions[myFirmwareId].version;
+	info("Actual firmware version: "+myFirmwareVersion+", online version: "+onlineFirmwareVersion);
+	
+	if (myFirmwareVersion==onlineFirmwareVersion)
+	{
+	    setStateIoBroker(myStatusID,"ALREADY UP TO DATE");
+		return;
+	}
+	
+	var filename = firmwareTypes[deviceId]+"_"+onlineFirmwareVersion+".bin";
+
+    if (!fs.existsSync(filename))
+	{
+		info("Downloading firmware...");
+	    const file = fs.createWriteStream(filename);
+        const request = http.get("http://www.haus-bus.de/"+firmwareTypes[deviceId]+".bin", function(response) 
+	    {
+          response.pipe(file);
+		  updateDownloadedFirmware(receiverObjectId, filename);
+        });
+	}
+	else
+	{
+		info("Firmware file already downloaded to "+process.cwd());
+		updateDownloadedFirmware(receiverObjectId, filename);
+	}
+}
+
+function updateDownloadedFirmware(receiverObjectId, filename)
+{
+	var deviceId = getDeviceId(receiverObjectId);
+	var objectIdFirmware = receiverObjectId;
+	var objectIdBooter = getObjectId(deviceId, CLASS_ID_CONTROLLER,2);
+	
+	info("Enabling bootloader of device "+deviceId+" -> "+objectIdToString(objectIdFirmware));
+
+	hwControllerReset(objectIdFirmware);
+	setTimeout(function(){hwControllerPing(objectIdBooter)},500);
+	setTimeout(function(){hwControllerPing(objectIdBooter)},600);
+	setTimeout(function(){hwControllerPing(objectIdBooter)},700);
+	setTimeout(function(){hwControllerPing(objectIdBooter)},800);
+	setTimeout(function(){hwControllerPing(objectIdBooter)},900);
+	
+	// jetzt sollte der Booter laufen oder er lief schon vorher
+	setTimeout(function()
+	{
+	  pongCallback[deviceId]=function(){updateDownloadedFirmwareB(receiverObjectId, filename);};
+	  hwControllerPing(objectIdBooter);	
+	},1200);
+}
+
+function updateDownloadedFirmwareB(receiverObjectId, filename)
+{
+	var deviceId = getDeviceId(receiverObjectId);
+	var objectIdFirmware = receiverObjectId;
+	var objectIdBooter = getObjectId(deviceId, CLASS_ID_CONTROLLER,2);
+
+	error(receiverObjectId+" -> "+filename);
+}
+
+function sleep(time) 
+{
+    var stop = new Date().getTime();
+    while(new Date().getTime() < stop + time) 
+	{
+        ;
+    }
+}
+
+
 function hwControllerGetModuleId(receiverObjectId)
 {
 	debug("getModuleId -> "+objectIdToString(receiverObjectId));
@@ -3138,16 +3314,16 @@ function hwControllerGetRemoteObjects(receiverObjectId)
 	sendHausbusUdpMessage(receiverObjectId, data, myObjectId);
 }
 
-function hwControllerPing(receiverObjectId)
+function hwControllerPing(receiverObjectId, forcePort="")
 {
 	debug("controllerPing -> "+objectIdToString(receiverObjectId));
 	
 	var data = [];
 	data[0]=127; // Funktion ID
-	sendHausbusUdpMessage(receiverObjectId, data, myObjectId);
+	sendHausbusUdpMessage(receiverObjectId, data, myObjectId, forcePort);
 }
 
-function sendHausbusUdpMessage(receiverObjectId, data, senderObjectId)
+function sendHausbusUdpMessage(receiverObjectId, data, senderObjectId, forcePort="")
 {
 	if (receiverObjectId==0)
 	{
@@ -3187,7 +3363,7 @@ function sendHausbusUdpMessage(receiverObjectId, data, senderObjectId)
     // Daten
     data.forEach(element => datagramm[datagrammPos++] = element);
     
-    sendUdpDatagram(datagramm);
+    sendUdpDatagram(datagramm, forcePort);
  }
 
 function dWordToBytes(inValue)
@@ -3454,7 +3630,6 @@ function repeatString(str, num)
 
 function getInstanceName(deviceId, moduleType, classId, instanceId)
 {
-  // Firmware IDs 1=AR8, 2=MS6, 3=SD6, 4=SD485, 5=SONOFF, 6=S0 Reader, 7=ESP, 8=HBC
   var firmwareType = firmwareTypes[deviceId];
   var moduleType = moduleTypes[deviceId];
   var instanceName;
@@ -3511,7 +3686,6 @@ function initModulesClassesInstances()
 		MODULES[obj.name]=obj;
 	}
 	
-	// Firmware IDs 1=AR8, 2=MS6, 3=SD6, 4=SD485, 5=SONOFF, 6=S0 Reader, 7=ESP, 8=HBC
 	// MODUL_ID_16_RELAIS_V1
     INSTANCES[MODUL_ID_16_RELAIS_V1]={};
 	INSTANCES[MODUL_ID_16_RELAIS_V1]["*"]={};
@@ -3665,14 +3839,14 @@ function initModulesClassesInstances()
     INSTANCES[MODUL_ID_6_TASTER]["*"][CLASS_ID_TASTER][56]="Extern Taster 6";
 
     // Nur HBC
-	INSTANCES[MODUL_ID_6_TASTER]["HBC"]={};
-	INSTANCES[MODUL_ID_6_TASTER]["HBC"][CLASS_ID_TASTER]={};
-	INSTANCES[MODUL_ID_6_TASTER]["HBC"][CLASS_ID_TASTER][33]="Extern Taster 1";
-	INSTANCES[MODUL_ID_6_TASTER]["HBC"][CLASS_ID_TASTER][34]="Extern Taster 2";
-	INSTANCES[MODUL_ID_6_TASTER]["HBC"][CLASS_ID_TASTER][35]="Extern Taster 3";
-	INSTANCES[MODUL_ID_6_TASTER]["HBC"][CLASS_ID_TASTER][36]="Extern Taster 4";
-	INSTANCES[MODUL_ID_6_TASTER]["HBC"][CLASS_ID_TASTER][37]="Extern Taster 5";
-    INSTANCES[MODUL_ID_6_TASTER]["HBC"][CLASS_ID_TASTER][38]="Extern Taster 6";
+	INSTANCES[MODUL_ID_6_TASTER][FIRMWARE_ID_HBC]={};
+	INSTANCES[MODUL_ID_6_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER]={};
+	INSTANCES[MODUL_ID_6_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][33]="Extern Taster 1";
+	INSTANCES[MODUL_ID_6_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][34]="Extern Taster 2";
+	INSTANCES[MODUL_ID_6_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][35]="Extern Taster 3";
+	INSTANCES[MODUL_ID_6_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][36]="Extern Taster 4";
+	INSTANCES[MODUL_ID_6_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][37]="Extern Taster 5";
+    INSTANCES[MODUL_ID_6_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][38]="Extern Taster 6";
 
 
 	INSTANCES[MODUL_ID_6_TASTER]["*"][CLASS_ID_LED]={};
@@ -3727,14 +3901,14 @@ function initModulesClassesInstances()
     INSTANCES[MODUL_ID_4_TASTER]["*"][CLASS_ID_TASTER][56]="Extern Taster 6";
 
     // Nur HBC
-	INSTANCES[MODUL_ID_4_TASTER]["HBC"]={};
-	INSTANCES[MODUL_ID_4_TASTER]["HBC"][CLASS_ID_TASTER]={};
-	INSTANCES[MODUL_ID_4_TASTER]["HBC"][CLASS_ID_TASTER][33]="Extern Taster 1";
-	INSTANCES[MODUL_ID_4_TASTER]["HBC"][CLASS_ID_TASTER][34]="Extern Taster 2";
-	INSTANCES[MODUL_ID_4_TASTER]["HBC"][CLASS_ID_TASTER][35]="Extern Taster 3";
-	INSTANCES[MODUL_ID_4_TASTER]["HBC"][CLASS_ID_TASTER][36]="Extern Taster 4";
-	INSTANCES[MODUL_ID_4_TASTER]["HBC"][CLASS_ID_TASTER][37]="Extern Taster 5";
-    INSTANCES[MODUL_ID_4_TASTER]["HBC"][CLASS_ID_TASTER][38]="Extern Taster 6";
+	INSTANCES[MODUL_ID_4_TASTER][FIRMWARE_ID_HBC]={};
+	INSTANCES[MODUL_ID_4_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER]={};
+	INSTANCES[MODUL_ID_4_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][33]="Extern Taster 1";
+	INSTANCES[MODUL_ID_4_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][34]="Extern Taster 2";
+	INSTANCES[MODUL_ID_4_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][35]="Extern Taster 3";
+	INSTANCES[MODUL_ID_4_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][36]="Extern Taster 4";
+	INSTANCES[MODUL_ID_4_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][37]="Extern Taster 5";
+    INSTANCES[MODUL_ID_4_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][38]="Extern Taster 6";
 
 	INSTANCES[MODUL_ID_4_TASTER]["*"][CLASS_ID_LED]={};
 	INSTANCES[MODUL_ID_4_TASTER]["*"][CLASS_ID_LED][49]="Led 1";
@@ -3784,14 +3958,14 @@ function initModulesClassesInstances()
     INSTANCES[MODUL_ID_2_TASTER]["*"][CLASS_ID_TASTER][56]="Extern Taster 6";
 
     // Nur HBC
-	INSTANCES[MODUL_ID_2_TASTER]["HBC"]={};
-	INSTANCES[MODUL_ID_2_TASTER]["HBC"][CLASS_ID_TASTER]={};
-	INSTANCES[MODUL_ID_2_TASTER]["HBC"][CLASS_ID_TASTER][33]="Extern Taster 1";
-	INSTANCES[MODUL_ID_2_TASTER]["HBC"][CLASS_ID_TASTER][34]="Extern Taster 2";
-	INSTANCES[MODUL_ID_2_TASTER]["HBC"][CLASS_ID_TASTER][35]="Extern Taster 3";
-	INSTANCES[MODUL_ID_2_TASTER]["HBC"][CLASS_ID_TASTER][36]="Extern Taster 4";
-	INSTANCES[MODUL_ID_2_TASTER]["HBC"][CLASS_ID_TASTER][37]="Extern Taster 5";
-    INSTANCES[MODUL_ID_2_TASTER]["HBC"][CLASS_ID_TASTER][38]="Extern Taster 6";
+	INSTANCES[MODUL_ID_2_TASTER][FIRMWARE_ID_HBC]={};
+	INSTANCES[MODUL_ID_2_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER]={};
+	INSTANCES[MODUL_ID_2_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][33]="Extern Taster 1";
+	INSTANCES[MODUL_ID_2_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][34]="Extern Taster 2";
+	INSTANCES[MODUL_ID_2_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][35]="Extern Taster 3";
+	INSTANCES[MODUL_ID_2_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][36]="Extern Taster 4";
+	INSTANCES[MODUL_ID_2_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][37]="Extern Taster 5";
+    INSTANCES[MODUL_ID_2_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][38]="Extern Taster 6";
 
 
 	INSTANCES[MODUL_ID_2_TASTER]["*"][CLASS_ID_LED]={};
@@ -3839,14 +4013,14 @@ function initModulesClassesInstances()
     INSTANCES[MODUL_ID_1_TASTER]["*"][CLASS_ID_TASTER][56]="Extern Taster 6";
 
     // Nur HBC
-	INSTANCES[MODUL_ID_1_TASTER]["HBC"]={};
-	INSTANCES[MODUL_ID_1_TASTER]["HBC"][CLASS_ID_TASTER]={};
-	INSTANCES[MODUL_ID_1_TASTER]["HBC"][CLASS_ID_TASTER][33]="Extern Taster 1";
-	INSTANCES[MODUL_ID_1_TASTER]["HBC"][CLASS_ID_TASTER][34]="Extern Taster 2";
-	INSTANCES[MODUL_ID_1_TASTER]["HBC"][CLASS_ID_TASTER][35]="Extern Taster 3";
-	INSTANCES[MODUL_ID_1_TASTER]["HBC"][CLASS_ID_TASTER][36]="Extern Taster 4";
-	INSTANCES[MODUL_ID_1_TASTER]["HBC"][CLASS_ID_TASTER][37]="Extern Taster 5";
-    INSTANCES[MODUL_ID_1_TASTER]["HBC"][CLASS_ID_TASTER][38]="Extern Taster 6";
+	INSTANCES[MODUL_ID_1_TASTER][FIRMWARE_ID_HBC]={};
+	INSTANCES[MODUL_ID_1_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER]={};
+	INSTANCES[MODUL_ID_1_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][33]="Extern Taster 1";
+	INSTANCES[MODUL_ID_1_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][34]="Extern Taster 2";
+	INSTANCES[MODUL_ID_1_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][35]="Extern Taster 3";
+	INSTANCES[MODUL_ID_1_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][36]="Extern Taster 4";
+	INSTANCES[MODUL_ID_1_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][37]="Extern Taster 5";
+    INSTANCES[MODUL_ID_1_TASTER][FIRMWARE_ID_HBC][CLASS_ID_TASTER][38]="Extern Taster 6";
 
 
 	INSTANCES[MODUL_ID_1_TASTER]["*"][CLASS_ID_LED]={};
@@ -4070,5 +4244,20 @@ function initModulesClassesInstances()
      		   configObject[bit]=configKey;
 			}
 		}
+    }
+	
+	FIRMWARE_IDS[1]=FIRMWARE_ID_AR8;
+	FIRMWARE_IDS[2]=FIRMWARE_ID_MS6;
+	FIRMWARE_IDS[3]=FIRMWARE_ID_SD6;
+	FIRMWARE_IDS[4]=FIRMWARE_ID_SD485;
+	FIRMWARE_IDS[5]=FIRMWARE_ID_SONOFF;
+	FIRMWARE_IDS[6]=FIRMWARE_ID_S0_Reader;
+	FIRMWARE_IDS[7]=FIRMWARE_ID_ESP;
+	FIRMWARE_IDS[8]=FIRMWARE_ID_HBC;
+
+    for (var firmwareId in FIRMWARE_IDS) 
+	{
+		var firmwareName = FIRMWARE_IDS[firmwareId];
+ 	    FIRMWARE_IDS[firmwareName]=firmwareId;
     }
 }
