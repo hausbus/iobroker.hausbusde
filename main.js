@@ -1711,12 +1711,23 @@ function hwSchalterReceivedStatus(sender, receiver, message, dataLength)
 function objectIdToString(objectId)
 {
 	var classId = getClassId(objectId);
-	var className;
-	if (classId == CLASS_ID_ETHERNET) className = "ETHERNET";
-	else if (typeof CLASSES[classId]=="undefined") className="Unbekannte Class "+classId;
-	else className = CLASSES[classId].name
+	var className = getClassName(classId);
+	var instanceId = getInstanceId(objectId);
+	var deviceId = getDeviceId(objectId);
+	var moduleType = moduleTypes[deviceId];
+	var moduleName = MODULES[moduleType];
+	if (typeof moduleName!="undefined") moduleName=moduleName.name;
+	else moduleName="UNKNOWN_DEVICE";
+
 	
-	return getDeviceId(objectId)+"."+className+"."+getInstanceId(objectId);
+	return moduleName+" ("+deviceId+")."+getInstanceName(deviceId, moduleType, classId, instanceId);//+" ("+instanceId+")";
+}
+
+function getClassName(classId)
+{
+  if (classId == CLASS_ID_ETHERNET) return "ETHERNET";
+  if (typeof CLASSES[classId]=="undefined") return "UNKNOWN_CLASS_"+classId;
+  return CLASSES[classId].name
 }
 
 function hwSchalterReceivedConfiguration(sender, receiver, message, dataLength)
@@ -2872,7 +2883,7 @@ function hwControllerReceivedConfiguration(sender, receiver, message, dataLength
 	
 	debug("controller configuration: "+moduleTypeName+" ("+moduleId+"), startupDelay = "+startupDelay+", logicalButtonMask = "+logicalButtonMask+", deviceId = "+deviceId+", reportMemoryStatusTime = "+reportMemoryStatusTime+", slotTypeA = "+slotTypeA+", slotTypeB = "+slotTypeB+", slotTypeC = "+slotTypeC+", slotTypeD = "+slotTypeD+", slotTypeE = "+slotTypeE+", slotTypeF = "+slotTypeF+", slotTypeG = "+slotTypeG+", slotTypeH = "+slotTypeH+", timeCorrection = "+timeCorrection+", dataBlockSize = "+dataBlockSize+", fcke = "+fcke);
 	
-	//if (moduleId!=-1) moduleTypes[deviceId]=moduleId;
+	if (moduleId!=-1) moduleTypes[deviceId]=moduleId;
 	
 	hwControllerGetRemoteObjects(sender);
 }
@@ -3450,7 +3461,8 @@ function getInstanceName(deviceId, moduleType, classId, instanceId)
   
   if (typeof INSTANCES[moduleType]!="undefined" && typeof INSTANCES[moduleType][firmwareType] !="undefined" && typeof INSTANCES[moduleType][firmwareType][classId] !="undefined" && typeof INSTANCES[moduleType][firmwareType][classId][instanceId] !="undefined" ) return INSTANCES[moduleType][firmwareType][classId][instanceId];
   else if (typeof INSTANCES[moduleType]!="undefined" &&  typeof INSTANCES[moduleType]["*"] !="undefined" && typeof INSTANCES[moduleType]["*"][classId] !="undefined" && typeof INSTANCES[moduleType]["*"][classId][instanceId] !="undefined") return INSTANCES[moduleType]["*"][classId][instanceId];
-  else return CLASSES[classId].name+"_ID"+instanceId;
+  
+  return getClassName(classId)+"_ID "+instanceId
 }
 
 function getIoBrokerId(deviceId,classId,instanceId,propertyName, subChannel="")
