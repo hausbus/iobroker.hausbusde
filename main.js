@@ -554,7 +554,7 @@ function aFunctionCall(ioBrokerId, newValue)
   var classId = getClassId(objectId);
   
   // Call: object=1136.Controller.1, state=.reset, newValue = true 
-  info("Call: state="+state+", newValue = "+newValue+", receiver = "+objectIdToString(objectId)); 
+  info("Call: state="+state+", newValue = "+newValue+" -> "+objectIdToString(objectId)); 
 
   if (classId == CLASS_ID_SCHALTER)
   {
@@ -759,7 +759,7 @@ function getDeviceIdFromIoBrokerId(ioBrokerId)
 
 function hwControllerReceivedEvStarted(receiverObjectId)
 {
-  info("controller started - "+objectIdToString(receiverObjectId));		
+  info("controller started <- "+objectIdToString(receiverObjectId));		
   hwControllerGetModuleId(receiverObjectId);
 }
 
@@ -777,7 +777,7 @@ function hwTemperatursensorReceivedEvents(sender, receiver, functionId, message,
 	else if (functionId==201) state="NORMAL";
 	else if (functionId==202) state="HOT";
 	
-	info("temperature sensor event "+state+" - "+objectIdToString(sender));	
+	info("temperature sensor event "+state+" <- "+objectIdToString(sender));	
 	
 	if (state!="")
 	{
@@ -788,7 +788,7 @@ function hwTemperatursensorReceivedEvents(sender, receiver, functionId, message,
 
 function hwTemperatursensorGetStatus(receiverObjectId)
 {
-	debug("temperatursensorGetStatus - "+objectIdToString(receiverObjectId));	
+	debug("temperatursensorGetStatus -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -818,7 +818,7 @@ function hwTemperatursensorReceivedStatus(sender, receiver, message, dataLength)
 	else if (byteLastEvent==201) state="NORMAL";
 	if (byteLastEvent==202) state="HOT";
 	
-	info("temperature sensor status: temperature = "+temperature+", state = "+state+" - "+objectIdToString(sender));
+	info("temperature sensor status: temperature = "+temperature+", state = "+state+" <- "+objectIdToString(sender));
 	
     var myId = getIoBrokerId(deviceId, CLASS_ID_TEMPERATURSENSOR, instanceId, TEMP_FKT_TEMPERATUR);
 	setStateIoBroker(myId, temperature);
@@ -832,7 +832,7 @@ function hwTemperatursensorReceivedStatus(sender, receiver, message, dataLength)
 
 function hwTemperatursensorGetConfiguration(receiverObjectId)
 {
-	debug("temperatursensorGetConfiguration - "+objectIdToString(receiverObjectId));	
+	debug("temperatursensorGetConfiguration -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -889,7 +889,7 @@ function hwTemperatursensorReceivedConfiguration(sender, receiver, message, data
 	hysteresis: hysteresis,
 	calibration:calibration};
 	
-	debug("temp configuration: "+dump(configurations[sender])+" - "+objectIdToString(sender));
+	debug("temp configuration: "+dump(configurations[sender])+" <- "+objectIdToString(sender));
 }
 
 function hwTemperatursensorSetConfiguration(configKey, newValue, receiverObjectId)
@@ -961,7 +961,7 @@ function hwTemperatursensorSetConfiguration(configKey, newValue, receiverObjectI
 	hysteresis: hysteresis,
 	calibration:calibration};	
 	
-	debug("temperaturSensorSetConfiguration: "+dump(configurations[receiverObjectId])+" - "+objectIdToString(receiverObjectId));
+	debug("temperaturSensorSetConfiguration: "+dump(configurations[receiverObjectId])+" -> "+objectIdToString(receiverObjectId));
 }
 
 // Helligkeitssensor
@@ -977,7 +977,7 @@ function hwHelligkeitssensorReceivedEvents(sender, receiver, functionId, message
 	else if (functionId==201) state="NORMAL";
 	else if (functionId==202) state="BRIGHT";
 	
-	info("brightness sensor event "+state+" - "+objectIdToString(sender));	
+	info("brightness sensor event "+state+" <- "+objectIdToString(sender));	
 	
 	if (state!="")
 	{
@@ -988,7 +988,7 @@ function hwHelligkeitssensorReceivedEvents(sender, receiver, functionId, message
 
 function hwHelligkeitssensorGetStatus(receiverObjectId)
 {
-	debug("helligkeitssensorGetStatus - "+objectIdToString(receiverObjectId));	
+	debug("helligkeitssensorGetStatus -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -1018,7 +1018,7 @@ function hwHelligkeitssensorReceivedStatus(sender, receiver, message, dataLength
 	else if (byteLastEvent==201) state="NORMAL";
 	if (byteLastEvent==202) state="BRIGHT";
 	
-	info("brightness sensor status: "+brightness+", state = "+state+" - "+objectIdToString(sender));
+	info("brightness sensor status: "+brightness+", state = "+state+" <- "+objectIdToString(sender));
 	
     var myId = getIoBrokerId(deviceId, CLASS_ID_HELLIGKEITSSENSOR, instanceId, BRIGHT_FKT_BRIGHTNESS);
 	setStateIoBroker(myId, brightness);
@@ -1032,7 +1032,7 @@ function hwHelligkeitssensorReceivedStatus(sender, receiver, message, dataLength
 
 function hwHelligkeitssensorGetConfiguration(receiverObjectId)
 {
-	debug("helligkeitssensorGetConfiguration - "+objectIdToString(receiverObjectId));	
+	debug("helligkeitssensorGetConfiguration -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -1089,7 +1089,7 @@ function hwHelligkeitssensorReceivedConfiguration(sender, receiver, message, dat
 	hysteresis: hysteresis,
 	calibration:calibration};
 	
-	debug("helligkeitssensorReceivedConfiguration: "+dump(configurations[sender])+" - "+objectIdToString(sender));
+	debug("helligkeitssensorReceivedConfiguration: "+dump(configurations[sender])+" <- "+objectIdToString(sender));
 }
 
 function hwHelligkeitssensorSetConfiguration(configKey, newValue, receiverObjectId)
@@ -1161,7 +1161,7 @@ function hwHelligkeitssensorSetConfiguration(configKey, newValue, receiverObject
 	hysteresis: hysteresis,
 	calibration:calibration};	
 	
-	info("brightness sensor setConfiguration: "+dump(configurations[receiverObjectId])+" - "+objectIdToString(receiverObjectId));
+	info("brightness sensor setConfiguration: "+dump(configurations[receiverObjectId])+" -> "+objectIdToString(receiverObjectId));
 }
 
 // Luftfeuchtigkeitssensoren
@@ -1177,7 +1177,7 @@ function hwFeuchteSensorReceivedEvents(sender, receiver, functionId, message, da
 	else if (functionId==201) state="NORMAL";
 	else if (functionId==202) state="WET";
 	
-	info("humidity sensor event "+state+" - "+objectIdToString(sender));	
+	info("humidity sensor event "+state+" <- "+objectIdToString(sender));	
 	
 	if (state!="")
 	{
@@ -1188,7 +1188,7 @@ function hwFeuchteSensorReceivedEvents(sender, receiver, functionId, message, da
 
 function hwFeuchteSensorGetStatus(receiverObjectId)
 {
-	debug("feuchteSensorGetStatus - "+objectIdToString(receiverObjectId));	
+	debug("feuchteSensorGetStatus -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -1213,7 +1213,7 @@ function hwFeuchteSensorReceivedStatus(sender, receiver, message, dataLength)
 	else if (byteLastEvent==201) state="NORMAL";
 	if (byteLastEvent==202) state="WET";
 	
-	info("humidity sensor status: "+humidity+", state = "+state+" - "+objectIdToString(sender));
+	info("humidity sensor status: "+humidity+", state = "+state+" <- "+objectIdToString(sender));
 	
     var myId = getIoBrokerId(deviceId, CLASS_ID_FEUCHTESENSOR, instanceId, HUMIDITY_FKT_HUMIDITY);
 	setStateIoBroker(myId, humidity);
@@ -1227,7 +1227,7 @@ function hwFeuchteSensorReceivedStatus(sender, receiver, message, dataLength)
 
 function hwFeuchteSensorGetConfiguration(receiverObjectId)
 {
-	debug("feuchteSensorGetConfiguration - "+objectIdToString(receiverObjectId));	
+	debug("feuchteSensorGetConfiguration -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -1284,7 +1284,7 @@ function hwFeuchteSensorReceivedConfiguration(sender, receiver, message, dataLen
 	hysteresis: hysteresis,
 	calibration:calibration};
 	
-	debug("feuchteSensorReceivedConfiguration: "+dump(configurations[sender])+" - "+objectIdToString(sender));
+	debug("feuchteSensorReceivedConfiguration: "+dump(configurations[sender])+" <- "+objectIdToString(sender));
 }
 
 function hwFeuchteSensorSetConfiguration(configKey, newValue, receiverObjectId)
@@ -1356,13 +1356,13 @@ function hwFeuchteSensorSetConfiguration(configKey, newValue, receiverObjectId)
 	hysteresis: hysteresis,
 	calibration:calibration};	
 	
-	info("humidity sensor setConfiguration: "+dump(configurations[receiverObjectId])+" - "+objectIdToString(receiverObjectId));
+	info("humidity sensor setConfiguration: "+dump(configurations[receiverObjectId])+" -> "+objectIdToString(receiverObjectId));
 }
 
 // TASTER
 function hwTasterGetConfiguration(receiverObjectId)
 {
-	debug("tasterGetConfiguration - "+objectIdToString(receiverObjectId));	
+	debug("tasterGetConfiguration -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -1373,7 +1373,7 @@ function hwTasterGetConfiguration(receiverObjectId)
 
 function hwTasterEnableEvents(enable, disableDuration,  receiverObjectId)
 {
-	info("input enableEvents enable = "+enable+", disableDuration = "+disableDuration+" - "+objectIdToString(receiverObjectId));	
+	info("input enableEvents enable = "+enable+", disableDuration = "+disableDuration+" -> "+objectIdToString(receiverObjectId));	
 	
 	disableDuration = parseInt(disableDuration);
 	
@@ -1410,7 +1410,7 @@ function hwTasterReceivedEvents(sender, receiver, functionId, message, dataLengt
 	if (stateByte==1) state=true;
 	else if (stateByte==0) state=false;
 	
-    info("input event "+event+", state = "+state+" - "+objectIdToString(sender));	
+    info("input event "+event+", state = "+state+" <- "+objectIdToString(sender));	
 	
 	if (event!="")
 	{
@@ -1427,7 +1427,7 @@ function hwTasterReceivedEvents(sender, receiver, functionId, message, dataLengt
 
 function hwTasterGetStatus(receiverObjectId)
 {
-	debug("tasterGetStatus - "+objectIdToString(receiverObjectId));	
+	debug("tasterGetStatus -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -1448,7 +1448,7 @@ function hwTasterReceivedStatus(sender, receiver, message, dataLength)
 	if (stateByte==1) state=true;
 	else if (stateByte==0) state=false;
 	
-    info("input status "+state+" - "+objectIdToString(sender));
+    info("input status "+state+" -> "+objectIdToString(sender));
 	
 	if (state!=-1)
 	{
@@ -1563,7 +1563,7 @@ function hwTasterSetConfiguration(configKey, newValue, receiverObjectId)
 	
 	configurations[receiverObjectId]={holdTimeout:holdTimeout, doubleClickTimeout:doubleClickTimeout, events:events, options: options};
 	
-	info("input setConfiguration: "+dump(configurations[receiverObjectId])+" - "+objectIdToString(receiverObjectId));
+	info("input setConfiguration: "+dump(configurations[receiverObjectId])+" -> "+objectIdToString(receiverObjectId));
 }
 
 // IR-Sensor
@@ -1581,7 +1581,7 @@ function hwIrSensorReceivedEvents(sender, receiver, functionId, message, dataLen
 		
 		var commandCode = address+"."+command;
 	
-        info("IR sensor event "+functionId+", commandCode = "+commandCode+" - "+objectIdToString(sender));	
+        info("IR sensor event "+functionId+", commandCode = "+commandCode+" <- "+objectIdToString(sender));	
 	
 	    var myId = getIoBrokerId(deviceId, CLASS_ID_IR_SENSOR, instanceId, IR_SENSOR_FKT_COMMAND);
 	    setStateIoBroker(myId, commandCode, true);
@@ -1591,7 +1591,7 @@ function hwIrSensorReceivedEvents(sender, receiver, functionId, message, dataLen
 // SCHALTER
 function hwSchalterOff(offDelay, receiverObjectId)
 {
-	info("relay off offDelay = "+offDelay+" - "+objectIdToString(receiverObjectId));	
+	info("relay off offDelay = "+offDelay+" -> "+objectIdToString(receiverObjectId));	
 
 	offDelay = parseInt(offDelay);
 	
@@ -1605,7 +1605,7 @@ function hwSchalterOff(offDelay, receiverObjectId)
 
 function hwSchalterOn(duration, onDelay, receiverObjectId)
 {
-	info("relay on duration = "+duration+", onDelay = "+onDelay+" - "+objectIdToString(receiverObjectId));	
+	info("relay on duration = "+duration+", onDelay = "+onDelay+" -> "+objectIdToString(receiverObjectId));	
 
 	duration=parseInt(duration);
 	onDelay=parseInt(onDelay);
@@ -1621,7 +1621,7 @@ function hwSchalterOn(duration, onDelay, receiverObjectId)
 
 function hwSchalterToggle(offTime, onTime, quantity,  receiverObjectId)
 {
-	info("relay toggle offTime = "+offTime+", onTime = "+onTime+", quantity = "+quantity+" - "+objectIdToString(receiverObjectId));	
+	info("relay toggle offTime = "+offTime+", onTime = "+onTime+", quantity = "+quantity+" -> "+objectIdToString(receiverObjectId));	
 
 	offTime = parseInt(offTime);
 	onTime = parseInt(onTime);
@@ -1639,7 +1639,7 @@ function hwSchalterToggle(offTime, onTime, quantity,  receiverObjectId)
 
 function hwSchalterGetStatus(receiverObjectId)
 {
-	debug("schalterGetStatus - "+objectIdToString(receiverObjectId));	
+	debug("schalterGetStatus -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -1670,7 +1670,7 @@ function hwSchalterReceivedEvents(sender, receiver, functionId, message, dataLen
 	}
 	else if (functionId==255) event="evError";
 	
-    info("relay event "+event+" - "+objectIdToString(sender));	
+    info("relay event "+event+" <- "+objectIdToString(sender));	
 	
 	var newState="";
 	if (event=="evOff") newState="false";
@@ -1697,7 +1697,7 @@ function hwSchalterReceivedStatus(sender, receiver, message, dataLength)
 	
 	var duration = bytesToWord(message, pos); pos+=2;
 
-	info("relay status: "+state+" - "+objectIdToString(sender));
+	info("relay status: "+state+" <- "+objectIdToString(sender));
 	
 	var newState="";
 	if (byteState==0) newState="false";
@@ -1745,7 +1745,7 @@ function hwSchalterReceivedConfiguration(sender, receiver, message, dataLength)
 // Rollladen
 function hwRolloGetConfiguration(receiverObjectId)
 {
-	debug("rolloGetConfiguration - "+objectIdToString(receiverObjectId));	
+	debug("rolloGetConfiguration -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -1767,7 +1767,7 @@ function hwRolloReceivedEvents(sender, receiver, functionId, message, dataLength
 		
 		if (functionId==200) position = message[pos++];
 
-	    info("blind event "+functionId+" - "+objectIdToString(sender));	
+	    info("blind event "+functionId+" <- "+objectIdToString(sender));	
 	
 	    var myId = getIoBrokerId(deviceId, CLASS_ID_ROLLLADEN, instanceId, ROLLO_FKT_POSITION);
 	    setStateIoBroker(myId, position, true);
@@ -1783,7 +1783,7 @@ function hwRolloReceivedEvents(sender, receiver, functionId, message, dataLength
 		else if (directionByte==1) direction="DOWN";
 		else if (directionByte==2) direction="UP";
 		
-	    info("blind start "+direction+" - "+objectIdToString(sender));	
+	    info("blind start "+direction+" -> "+objectIdToString(sender));	
 		
 		if (direction!="")
 		{	
@@ -1795,7 +1795,7 @@ function hwRolloReceivedEvents(sender, receiver, functionId, message, dataLength
 
 function hwRolloGetStatus(receiverObjectId)
 {
-	debug("rolloGetStatus - "+objectIdToString(receiverObjectId));	
+	debug("rolloGetStatus -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -1806,7 +1806,7 @@ function hwRolloGetStatus(receiverObjectId)
 
 function hwRolloStart(direction, receiverObjectId)
 {
-	info("blind start direction = "+direction+" - "+objectIdToString(receiverObjectId));	
+	info("blind start direction = "+direction+" -> "+objectIdToString(receiverObjectId));	
 
     var directionByte;
 	if (direction) directionByte=2;
@@ -1822,7 +1822,7 @@ function hwRolloStart(direction, receiverObjectId)
 
 function hwRolloToggle(receiverObjectId)
 {
-	info("blind toggle - "+objectIdToString(receiverObjectId));	
+	info("blind toggle -> "+objectIdToString(receiverObjectId));	
 
 	var data = [];
 	var pos=0;
@@ -1833,7 +1833,7 @@ function hwRolloToggle(receiverObjectId)
 }
 function hwRolloStop(receiverObjectId)
 {
-	info("blind stop - "+objectIdToString(receiverObjectId));	
+	info("blind stop -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -1844,7 +1844,7 @@ function hwRolloStop(receiverObjectId)
 
 function hwRolloSetPosition(position, receiverObjectId)
 {
-	info("blind setPosition position = "+position+" - "+objectIdToString(receiverObjectId));	
+	info("blind setPosition position = "+position+" -> "+objectIdToString(receiverObjectId));	
 
 	position = parseInt(position);
 
@@ -1858,7 +1858,7 @@ function hwRolloSetPosition(position, receiverObjectId)
 
 function hwRolloMoveToPosition(position, receiverObjectId)
 {
-	info("blind moveToPosition position = "+position+" - "+objectIdToString(receiverObjectId));	
+	info("blind moveToPosition position = "+position+" -> "+objectIdToString(receiverObjectId));	
 
 	position = parseInt(position);
 
@@ -1879,7 +1879,7 @@ function hwRolloReceivedStatus(sender, receiver, message, dataLength)
 	
 	var position = message[pos++];
 	
-    info("blind position "+position+" - "+objectIdToString(sender));
+    info("blind position "+position+" <- "+objectIdToString(sender));
 	
     var myId = getIoBrokerId(deviceId, CLASS_ID_ROLLLADEN, instanceId, ROLLO_FKT_POSITION);
 	setStateIoBroker(myId, position, false);
@@ -1956,13 +1956,13 @@ function hwRolloSetConfiguration(configKey, newValue, receiverObjectId)
 	
 	configurations[receiverObjectId]={closeTime:closeTime, openTime:openTime, options: options};
 	
-	info("blind setConfiguration: "+dump(configurations[receiverObjectId])+" - "+objectIdToString(receiverObjectId));
+	info("blind setConfiguration: "+dump(configurations[receiverObjectId])+" -> "+objectIdToString(receiverObjectId));
 }
 
 // LOGICAL BUTTON
 function hwLogicalButtonOff(receiverObjectId)
 {
-	info("backlight off - "+objectIdToString(receiverObjectId));	
+	info("backlight off -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -1973,7 +1973,7 @@ function hwLogicalButtonOff(receiverObjectId)
 
 function hwLogicalButtonOn(brightness, duration, receiverObjectId)
 {
-	info("backlight on brightness = "+brightness+", duration = "+duration+" - "+objectIdToString(receiverObjectId));	
+	info("backlight on brightness = "+brightness+", duration = "+duration+" -> "+objectIdToString(receiverObjectId));	
 	
 	brightness = parseInt(brightness);
 	
@@ -1988,7 +1988,7 @@ function hwLogicalButtonOn(brightness, duration, receiverObjectId)
 
 function hwLogicalButtonBlink(brightness, offTime, onTime, quantity, receiverObjectId)
 {
-	info("backlight blink brightness = "+brightness+", offTime = "+offTime+", onTime = "+onTime+", quantity = "+quantity+" - "+objectIdToString(receiverObjectId));		
+	info("backlight blink brightness = "+brightness+", offTime = "+offTime+", onTime = "+onTime+", quantity = "+quantity+" -> "+objectIdToString(receiverObjectId));		
 	
 	brightness = parseInt(brightness);
 	offTime = parseInt(offTime);
@@ -2008,7 +2008,7 @@ function hwLogicalButtonBlink(brightness, offTime, onTime, quantity, receiverObj
 
 function hwLogicalButtonSetMinBrightness(minBrightness, duration,  receiverObjectId)
 {
-	info("backlight setMinBrightness minBrightness = "+minBrightness+", duration = "+duration+" - "+objectIdToString(receiverObjectId));	
+	info("backlight setMinBrightness minBrightness = "+minBrightness+", duration = "+duration+" -> "+objectIdToString(receiverObjectId));	
 	
     minBrightness = parseInt(minBrightness);
 
@@ -2034,7 +2034,7 @@ function hwLogicalButtonReceivedEvents(sender, receiver, functionId, message, da
 	else if (functionId == 201) state=true;
 	else if (functionId == 202) state=true; // blink
 	
-    info("backlight event "+state+" ("+functionId+") - "+objectIdToString(sender));
+    info("backlight event "+state+" ("+functionId+") <- "+objectIdToString(sender));
 	
 	if (state!=-1)
 	{
@@ -2045,7 +2045,7 @@ function hwLogicalButtonReceivedEvents(sender, receiver, functionId, message, da
 
 function hwLogicalButtonGetStatus(receiverObjectId)
 {
-	debug("logicalButtonGetStatus - "+objectIdToString(receiverObjectId));	
+	debug("logicalButtonGetStatus -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -2067,7 +2067,7 @@ function hwLogicalButtonReceivedStatus(sender, receiver, message, dataLength)
 	else if (byteStatus == 1) state=true;
 	else if (byteStatus == 2) state=true; // blink
 	
-    info("backlight status "+state+" - "+objectIdToString(sender));
+    info("backlight status "+state+" <- "+objectIdToString(sender));
 	
 	if (state!=-1)
 	{
@@ -2107,7 +2107,7 @@ function hwLedOff(offDelay, receiverObjectId)
 {
 	offDelay = parseInt(offDelay);
 	
-	info("output off offDelay = "+offDelay+" - "+objectIdToString(receiverObjectId));	
+	info("output off offDelay = "+offDelay+" -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -2121,7 +2121,7 @@ function hwLedMinBrightness(minBrightness, receiverObjectId)
 {
 	minBrightness = parseInt(minBrightness);
 	
-	info("output minBrightness "+minBrightness+" - "+objectIdToString(receiverObjectId));	
+	info("output minBrightness "+minBrightness+" -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -2137,7 +2137,7 @@ function hwLedOn(brightness, duration, onDelay, receiverObjectId)
 	duration = parseInt(duration);
 	onDelay = parseInt(onDelay);
 	
-	info("output on brightness = "+brightness+", duration = "+duration+", onDelay = "+onDelay+" - "+objectIdToString(receiverObjectId));	
+	info("output on brightness = "+brightness+", duration = "+duration+", onDelay = "+onDelay+" -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -2156,7 +2156,7 @@ function hwLedBlink(brightness, offTime, onTime, quantity, receiverObjectId)
 	onTime = parseInt(onTime);
 	quantity = parseInt(quantity);
 	
-	info("output blink brightness = "+brightness+", offTime = "+offTime+", onTime = "+onTime+", quantity = "+quantity+" - "+objectIdToString(receiverObjectId));	
+	info("output blink brightness = "+brightness+", offTime = "+offTime+", onTime = "+onTime+", quantity = "+quantity+" -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -2187,7 +2187,7 @@ function hwLedReceivedEvents(sender, receiver, functionId, message, dataLength)
 	else if (functionId==202) event="evBlink";
 	else if (functionId==255) event="evError";
 	
-	info("output event: "+event+" - "+objectIdToString(sender));
+	info("output event: "+event+" <- "+objectIdToString(sender));
 	
 	var newState="";
 	if (event=="evOff") newState="false";
@@ -2202,7 +2202,7 @@ function hwLedReceivedEvents(sender, receiver, functionId, message, dataLength)
 
 function hwLedGetStatus(receiverObjectId)
 {
-	debug("ledGetStatus - "+objectIdToString(receiverObjectId));	
+	debug("ledGetStatus -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -2226,7 +2226,7 @@ function hwLedReceivedStatus(sender, receiver, message, dataLength)
 	
 	var duration = bytesToWord(message, pos); pos+=2;
 	
-    info("output status: "+newState+", duration = "+duration+" - "+objectIdToString(sender));
+    info("output status: "+newState+", duration = "+duration+" <- "+objectIdToString(sender));
 	
 	if (newState!="")
 	{
@@ -2237,7 +2237,7 @@ function hwLedReceivedStatus(sender, receiver, message, dataLength)
 
 function hwLedGetConfiguration(receiverObjectId)
 {
-	debug("ledGetConfiguration - "+objectIdToString(receiverObjectId));	
+	debug("ledGetConfiguration -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -2283,7 +2283,7 @@ function hwLedSetConfiguration(configKey, newValue, receiverObjectId)
 	
     configurations[receiverObjectId]={dimmOffset:dimmOffset, minBrightness:minBrightness, timebase:timebase, options: options};
 	
-	info("output setConfiguration: "+dump(configurations[receiverObjectId])+" - "+objectIdToString(receiverObjectId));
+	info("output setConfiguration: "+dump(configurations[receiverObjectId])+" -> "+objectIdToString(receiverObjectId));
 }
 
 function hwLedReceivedConfiguration(sender, receiver, message, dataLength)
@@ -2323,13 +2323,13 @@ function hwLedReceivedConfiguration(sender, receiver, message, dataLength)
 
     configurations[sender]={dimmOffset:dimmOffset, minBrightness:minBrightness, timebase:timebase, options: byteOptions};
 	
-	debug("output configuration: "+dump(configurations[sender])+" - "+objectIdToString(sender));
+	debug("output configuration: "+dump(configurations[sender])+" <- "+objectIdToString(sender));
 }
 
 // Dimmer
 function hwDimmerGetConfiguration(receiverObjectId)
 {
-	debug("dimmerGetConfiguration - "+objectIdToString(receiverObjectId));	
+	debug("dimmerGetConfiguration -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -2352,9 +2352,9 @@ function hwDimmerReceivedEvents(sender, receiver, functionId, message, dataLengt
 		if (functionId==201)
 		{
 			brightness = message[pos++];
-			info("dimmer event evOn brightness = "+brightness+" - "+objectIdToString(sender));	
+			info("dimmer event evOn brightness = "+brightness+" <- "+objectIdToString(sender));	
 		}
-		else info("dimmer event evOff - "+objectIdToString(sender));	
+		else info("dimmer event evOff <- "+objectIdToString(sender));	
 	
 	    var myId = getIoBrokerId(deviceId, CLASS_ID_DIMMER, instanceId, DIMMER_FKT_BRIGHTNESS);
 	    setStateIoBroker(myId, brightness, true);
@@ -2369,7 +2369,7 @@ function hwDimmerReceivedEvents(sender, receiver, functionId, message, dataLengt
 		if (directionByte==1) direction="UP";
 		else if (directionByte==255) direction="DOWN";
 		
-	    info("dimmer event start direction = "+direction+" - "+objectIdToString(sender));	
+	    info("dimmer event start direction = "+direction+" <- "+objectIdToString(sender));	
 		
 		if (direction!="")
 		{	
@@ -2381,7 +2381,7 @@ function hwDimmerReceivedEvents(sender, receiver, functionId, message, dataLengt
 
 function hwDimmerGetStatus(receiverObjectId)
 {
-	debug("dimmerGetStatus - "+objectIdToString(receiverObjectId));	
+	debug("dimmerGetStatus -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -2392,7 +2392,7 @@ function hwDimmerGetStatus(receiverObjectId)
 
 function hwDimmerStart(direction, receiverObjectId)
 {
-	info("dimmer start direction = "+direction+" - "+objectIdToString(receiverObjectId));	
+	info("dimmer start direction = "+direction+" -> "+objectIdToString(receiverObjectId));	
 
     var directionByte;
 	if (direction) directionByte=1;
@@ -2408,7 +2408,7 @@ function hwDimmerStart(direction, receiverObjectId)
 
 function hwDimmerToggle(receiverObjectId)
 {
-	info("dimmer toggle - "+objectIdToString(receiverObjectId));	
+	info("dimmer toggle -> "+objectIdToString(receiverObjectId));	
 
 	var data = [];
 	var pos=0;
@@ -2419,7 +2419,7 @@ function hwDimmerToggle(receiverObjectId)
 }
 function hwDimmerStop(receiverObjectId)
 {
-	info("dimmer stop - "+objectIdToString(receiverObjectId));	
+	info("dimmer stop -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -2433,7 +2433,7 @@ function hwDimmerSetBrightness(brightness, duration, receiverObjectId)
 	brightness = parseInt(brightness);
 	duration = parseInt(duration);
 
-	info("dimmer setBrightness brightness = "+brightness+", duration = "+duration+" - "+objectIdToString(receiverObjectId));	
+	info("dimmer setBrightness brightness = "+brightness+", duration = "+duration+" -> "+objectIdToString(receiverObjectId));	
 
 	var data = [];
 	var pos=0;
@@ -2453,7 +2453,7 @@ function hwDimmerReceivedStatus(sender, receiver, message, dataLength)
 	
 	var brightness = message[pos++];
 	
-    info("dimmer status brightness = "+brightness+" - "+objectIdToString(sender));
+    info("dimmer status brightness = "+brightness+" <- "+objectIdToString(sender));
 	
     var myId = getIoBrokerId(deviceId, CLASS_ID_DIMMER, instanceId, DIMMER_FKT_BRIGHTNESS);
 	setStateIoBroker(myId, brightness, false);
@@ -2538,13 +2538,13 @@ function hwDimmerSetConfiguration(configKey, newValue, receiverObjectId)
 	
 	configurations[receiverObjectId]={mode:mode, fadingTime:fadingTime, dimmingTime: dimmingTime, dimmingRangeStart: dimmingRangeStart, dimmingRangeEnd: dimmingRangeEnd};
 	
-	info("dimmer setConfiguration: "+dump(configurations[receiverObjectId])+" - "+objectIdToString(receiverObjectId));
+	info("dimmer setConfiguration: "+dump(configurations[receiverObjectId])+" -> "+objectIdToString(receiverObjectId));
 }
 
 // Ethernet
 function hwEthernetGetCurrentIp(receiverObjectId)
 {
-	debug("getCurrentIp - "+objectIdToString(receiverObjectId)+" / "+receiverObjectId);
+	debug("getCurrentIp -> "+objectIdToString(receiverObjectId)+" / "+receiverObjectId);
 	
 	var data = [];
 	data[0]=3; // Funktion ID
@@ -2564,7 +2564,7 @@ function hwEthernetReceivedIp(sender, receiver, message, dataLength)
 	var byte3 = message[pos++];
 	var ip = byte0+"."+byte1+"."+byte2+"."+byte3;
 	
-	info("ethernet ip "+ip+" - "+objectIdToString(sender));	
+	info("ethernet ip "+ip+" <- "+objectIdToString(sender));	
 	
 	var myId = getIoBrokerId(deviceId,CLASS_ID_CONTROLLER,instanceId,ETHERNET_FKT_IP);
 	setStateIoBroker(myId, ip);
@@ -2635,14 +2635,14 @@ function hwEthernetSetConfiguration(newValue, receiverObjectId)
 	
 	configurations[receiverObjectId]={ip:ip, options:options, port:port, loxoneIp: loxoneIp};
 	
-	info("ethernet setConfiguration: "+dump(configurations[receiverObjectId])+" - "+objectIdToString(receiverObjectId));
+	info("ethernet setConfiguration: "+dump(configurations[receiverObjectId])+" -> "+objectIdToString(receiverObjectId));
 	
 	if (changes) hwControllerReset(getObjectId(getDeviceId(receiverObjectId), CLASS_ID_CONTROLLER, 1));
 }
 
 function hwEthernetGetConfiguration(receiverObjectId)
 {
-	debug("ethernetGetConfiguration - "+objectIdToString(receiverObjectId));	
+	debug("ethernetGetConfiguration -> "+objectIdToString(receiverObjectId));	
 	
 	var data = [];
 	var pos=0;
@@ -2665,7 +2665,7 @@ function hwEthernetReceivedConfiguration(sender, receiver, message, dataLength)
 	
 	configurations[sender]={ip:ip, options:options, port:port, loxoneIp: loxoneIp};
 
-	debug("Ethernet: "+dump(configurations[sender])+" - "+objectIdToString(sender));	
+	debug("Ethernet: "+dump(configurations[sender])+" <- "+objectIdToString(sender));	
 	
 	var myId = getIoBrokerId(deviceId,CLASS_ID_CONTROLLER,instanceId,ETHERNET_CFG_FIXED_IP_DHCP);
 	if (isBitSet(options, CONFIG_BITS[CLASS_ID_ETHERNET]["options"][ETHERNET_CFG_FIXED_IP_DHCP])) ip="DHCP"
@@ -2707,7 +2707,7 @@ function hwControllerReceivedModuleId(sender, receiver, message, dataLength)
 	
 	firmwareTypes[deviceId]=firmwareId;
 	
-	info("controller moduleId: name = "+name+", size = "+size+", version =  "+version+", type = "+firmwareId+" - "+objectIdToString(sender));	
+	info("controller moduleId: name = "+name+", size = "+size+", version =  "+version+", type = "+firmwareId+" <- "+objectIdToString(sender));	
 	
     hwControllerGetConfiguration(getObjectId(deviceId, CLASS_ID_CONTROLLER, 1));
 }
@@ -2720,7 +2720,7 @@ function hwControllerReceivedRemoteObjects(sender, receiver, message, dataLength
 	
 	var objectList = bytesToWordList(message, DATA_START, dataLength);
 	
-	debug("Controller RemoteObjects: "+objectList+" - "+objectIdToString(sender));	
+	debug("Controller RemoteObjects: "+objectList+" <- "+objectIdToString(sender));	
 	
 	var nrRelais=0;
     var nrTaster=0;
@@ -3089,7 +3089,7 @@ function addIoBrokerStatesForInstance(deviceId, classId, instanceId)
 
 function hwControllerReset(receiverObjectId)
 {
-	info("reset - "+objectIdToString(receiverObjectId));
+	info("reset -> "+objectIdToString(receiverObjectId));
 	
 	var data = [];
 	data[0]=1; // Funktion ID
@@ -3100,7 +3100,7 @@ function hwControllerReset(receiverObjectId)
 
 function hwControllerGetModuleId(receiverObjectId)
 {
-	debug("getModuleId - "+objectIdToString(receiverObjectId));
+	debug("getModuleId -> "+objectIdToString(receiverObjectId));
 	
 	var data = [];
 	data[0]=2; // Funktion ID
@@ -3110,7 +3110,7 @@ function hwControllerGetModuleId(receiverObjectId)
 
 function hwControllerGetConfiguration(receiverObjectId)
 {
-	debug("controllerGetConfiguration - "+objectIdToString(receiverObjectId));
+	debug("controllerGetConfiguration -> "+objectIdToString(receiverObjectId));
 	
 	var data = [];
 	data[0]=5; // Funktion ID
@@ -3120,7 +3120,7 @@ function hwControllerGetConfiguration(receiverObjectId)
 
 function hwControllerGetRemoteObjects(receiverObjectId)
 {
-	debug("getRemoteObjects - "+objectIdToString(receiverObjectId));
+	debug("getRemoteObjects -> "+objectIdToString(receiverObjectId));
 	
 	var data = [];
 	data[0]=3; // Funktion ID
@@ -3129,7 +3129,7 @@ function hwControllerGetRemoteObjects(receiverObjectId)
 
 function hwControllerPing(receiverObjectId)
 {
-	debug("controllerPing - "+objectIdToString(receiverObjectId));
+	debug("controllerPing -> "+objectIdToString(receiverObjectId));
 	
 	var data = [];
 	data[0]=127; // Funktion ID
