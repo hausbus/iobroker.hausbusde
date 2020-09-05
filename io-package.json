@@ -26,7 +26,7 @@
     [
       "Hermann Hoeschen <info@haus-bus.de>"
     ],
-    "license": "Apache 2.0",
+    "license": "Apache-2.0",
     "platform": "Javascript/Node.js",
     "mode": "daemon",
     "messagebox": true,
@@ -42,7 +42,7 @@
       "Taster"
     ],
     "icon": "haus-bus-logo.jpg",
-    "extIcon": "https://github.com/hausbus/ioBroker.hausbusde/master/admin/haus-bus-logo.jpg"
+    "extIcon": "https://github.com/hausbus/ioBroker.hausbusde/blob/master/admin/haus-bus-logo.jpg"
   },
   "native": 
   {
