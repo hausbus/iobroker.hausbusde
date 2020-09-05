@@ -1,6 +1,6 @@
 {
   "name": "hausbusde",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "ioBroker ddapter that communicates with haus-bus.de components",
   "main": "main.js",
   "scripts": {
