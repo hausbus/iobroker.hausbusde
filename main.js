@@ -2873,7 +2873,7 @@ function hwControllerReceivedRemoteObjects(sender, receiver, message, dataLength
 	   {
 		   var ethernetObjectId = getObjectId(deviceId, classId, instanceId);
 		   addStateIoBroker(ETHERNET_FKT_IP, 'string', 'info.ip', deviceId, CLASS_ID_CONTROLLER, instanceId, false, true, hwEthernetGetCurrentIp(ethernetObjectId), CHANNEL_CONFIG);
-		   addStateIoBroker(ETHERNET_CFG_FIXED_IP_DHCP, 'state', 'text', deviceId, CLASS_ID_CONTROLLER, instanceId, true, true, hwEthernetGetConfiguration(ethernetObjectId), CHANNEL_CONFIG);
+		   addStateIoBroker(ETHERNET_CFG_FIXED_IP_DHCP, 'string', 'text', deviceId, CLASS_ID_CONTROLLER, instanceId, true, true, hwEthernetGetConfiguration(ethernetObjectId), CHANNEL_CONFIG);
 	   }
 
 	   if (!CLASSES[classId]) return;
@@ -3134,7 +3134,7 @@ function addIoBrokerStatesForInstance(deviceId, classId, instanceId)
    else if (classId == CLASS_ID_TEMPERATURSENSOR)
    {
 	  addStateIoBroker(TEMP_FKT_TEMPERATUR, 'number', 'value.temperature', deviceId, classId, instanceId, false, true);
-  	  addStateIoBroker(TEMP_FKT_TEMPERATURE_STATE, 'state', 'state ', deviceId, classId, instanceId, false, true);
+  	  addStateIoBroker(TEMP_FKT_TEMPERATURE_STATE, 'string', 'state ', deviceId, classId, instanceId, false, true);
 	  
   	  addStateIoBroker(TEMP_CFG_LOWER_THRESHOLD, 'number', 'state ', deviceId, classId, instanceId, true, true, null,CHANNEL_CONFIG);
   	  addStateIoBroker(TEMP_CFG_UPPER_THRESHOLD, 'number', 'state ', deviceId, classId, instanceId, true, true, null,CHANNEL_CONFIG);
@@ -3147,7 +3147,7 @@ function addIoBrokerStatesForInstance(deviceId, classId, instanceId)
    else if (classId == CLASS_ID_HELLIGKEITSSENSOR)
    {
 	  addStateIoBroker(BRIGHT_FKT_BRIGHTNESS, 'number', 'value.brightness', deviceId, classId, instanceId, false, true);
-  	  addStateIoBroker(BRIGHT_FKT_BRIGHTNESS_STATE, 'state', 'state ', deviceId, classId, instanceId, false, true);
+  	  addStateIoBroker(BRIGHT_FKT_BRIGHTNESS_STATE, 'string', 'state ', deviceId, classId, instanceId, false, true);
 	  
   	  addStateIoBroker(BRIGHT_CFG_LOWER_THRESHOLD, 'number', 'state ', deviceId, classId, instanceId, true, true, null,CHANNEL_CONFIG);
   	  addStateIoBroker(BRIGHT_CFG_UPPER_THRESHOLD, 'number', 'state ', deviceId, classId, instanceId, true, true, null,CHANNEL_CONFIG);
@@ -3160,7 +3160,7 @@ function addIoBrokerStatesForInstance(deviceId, classId, instanceId)
    else if (classId == CLASS_ID_FEUCHTESENSOR)
    {
 	  addStateIoBroker(HUMIDITY_FKT_HUMIDITY, 'number', 'value.humidity', deviceId, classId, instanceId, false, true);
-  	  addStateIoBroker(HUMIDITY_FKT_HUMIDITY_STATE, 'state', 'state ', deviceId, classId, instanceId, false, true);
+  	  addStateIoBroker(HUMIDITY_FKT_HUMIDITY_STATE, 'string', 'state ', deviceId, classId, instanceId, false, true);
 	  
   	  addStateIoBroker(HUMIDITY_CFG_LOWER_THRESHOLD, 'number', 'state ', deviceId, classId, instanceId, true, true, null,CHANNEL_CONFIG);
   	  addStateIoBroker(HUMIDITY_CFG_UPPER_THRESHOLD, 'number', 'state ', deviceId, classId, instanceId, true, true, null,CHANNEL_CONFIG);
