@@ -1,5 +1,5 @@
 # iobroker.hausbusde
-IO Broker Adapter that supports all haus-bus.de components
+IO Broker Adapter that supports all haus-bus.de components <br>
 For a documentation about the supported hardware and IO Broker integration please check www.haus-bus.de/iobroker
 
 ## Installation
