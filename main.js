@@ -3259,8 +3259,7 @@ function updateDownloadedFirmware(receiverObjectId, filename)
 	setTimeout(function(){hwControllerPing(objectIdBooter)},900);
 	
 	// jetzt sollte der Booter laufen oder er lief schon vorher
-	setTimeout(function()
-	{
+	setTimeout(function(){
 	  pongCallback[deviceId]=function(){updateDownloadedFirmwareB(receiverObjectId, filename);};
 	  hwControllerPing(objectIdBooter);	
 	},1200);

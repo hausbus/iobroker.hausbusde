@@ -2,7 +2,7 @@
   "common": 
   {
     "name": "hausbusde",
-    "version": "0.0.2",
+    "version": "0.1.1",
     "news": 
     {
       "0.0.2": 
@@ -11,11 +11,11 @@
         "de": "initial commit"
       }
     },
-    "title": "Haus-Bus.de",
+    "title": "Haus-Bus.de Adapter",
     "titleLang": 
      {
-      "en": "Haus-Bus.de",
-      "de": "Haus-Bus.de"
+      "en": "Haus-Bus.de Adapter",
+      "de": "Haus-Bus.de Adapter"
      },
     "desc": 
     {
