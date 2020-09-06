@@ -31,7 +31,7 @@
     [
       "Hermann Hoeschen <info@haus-bus.de>"
     ],
-    "license": "Apache-2.0",
+    "license": "MIT",
     "platform": "Javascript/Node.js",
     "mode": "daemon",
     "messagebox": true,
