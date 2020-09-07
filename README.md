@@ -33,6 +33,7 @@ The HausBusDe adapter is ready to use without further configurations. It is auto
 <br>
 <br>
 <br>
+
 ## Changelog
 ### 0.1.2 (2020-09-06)
 * (hausbusde) first public version
