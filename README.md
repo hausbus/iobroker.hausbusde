@@ -4,7 +4,8 @@ For a documentation about the supported hardware and IO Broker integration pleas
 
 ## Installation
 <!--You can either install the adapter via the ioBroker web interface or on your local machine via npm.-->
-This adapter is actually in pilot phase and not yet contained in the ioBroker catalog. Therefore it can be installed from GIT by:<br>
+This adapter is actually in pilot phase and not yet contained in the official ioBroker catalog. If you are facing any problems or bug please contact info@haus-bus.de<br>
+The adapter can be installed from GIT with the following instructions:<br>
 
 <img src="admin/install.jpg"><br>
 1: Choose Adapter<br>
