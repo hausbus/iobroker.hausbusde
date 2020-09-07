@@ -3,12 +3,17 @@ IO Broker Adapter that supports all haus-bus.de components <br>
 For a documentation about the supported hardware and IO Broker integration please check<br>www.haus-bus.de/iobroker
 
 ## Installation
-#You can either install the adapter via the ioBroker web interface or on your local machine via npm.
+<!--You can either install the adapter via the ioBroker web interface or on your local machine via npm.-->
 This adapter is actually in pilot phase and not yet contained in the ioBroker catalog. Therefore it can be installed from GIT by:<br>
 
-<img src="admin/install.jpg">
+<img src="admin/install.jpg"><br>
+1: Choose Adapter<br>
+2: Choose icon "Install from own source"<br>
+3: Choose "From any destination" <br>
+4: Enter url: https://github.com/hausbus/ioBroker.hausbusde.git <br>
+5: Click "Install" <br>
 
-
+<!--
 ### Browser-based
 1. Open your ioBroker web interface in a browser (eg: 192.168.30.70:8081)
 2. Click on Tab "Adapters"
@@ -19,7 +24,7 @@ This adapter is actually in pilot phase and not yet contained in the ioBroker ca
 Navigate into your iobroker folder and execute the following command: 
 ```bash
 npm i iobroker.denon
-```
+```-->
 
 ## Setup
 The HausBusDe adapter is ready to use without further configurations. It is automatically searching for haus-bus.de components using UDP broadcast requests. Its mandatory to have at least one haus-bus.de component with a network interface (for example any relay module) that is connected to the same network like io broker. Any further components can be connected by RS485 to the module with ethernet gateway.
