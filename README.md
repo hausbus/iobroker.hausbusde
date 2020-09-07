@@ -30,9 +30,9 @@ npm i iobroker.denon
 ## Setup
 The HausBusDe adapter is ready to use without further configurations. It is automatically searching for haus-bus.de components using UDP broadcast requests. Its mandatory to have at least one haus-bus.de component with a network interface (for example any relay module) that is connected to the same network like io broker. Any further components can be connected by RS485 to the module with ethernet gateway.
 
-
-
-
+<br>
+<br>
+<br>
 ## Changelog
 ### 0.1.2 (2020-09-06)
 * (hausbusde) first public version
