@@ -269,7 +269,7 @@ function main()
 	  
 	  adapter.subscribeStates(adapter.namespace+".*");
 	  adapter.setObjectNotExists(adapter.namespace+"."+CONTROLLER_RESEACH_DEVICES,{type: 'state',common: {name: CONTROLLER_RESEACH_DEVICES,type: "boolean",role: "button"},native: {}});
-	  adapter.setObjectNotExists(adapter.namespace+"."+CONTROLLER_CHECK_FIRMWARE_UPDATES,{type: 'state',common: {name: CONTROLLER_CHECK_FIRMWARE_UPDATES,type: "boolean",role: "button"},native: {}});
+	  //adapter.setObjectNotExists(adapter.namespace+"."+CONTROLLER_CHECK_FIRMWARE_UPDATES,{type: 'state',common: {name: CONTROLLER_CHECK_FIRMWARE_UPDATES,type: "boolean",role: "button"},native: {}});
 
 	  searchAllDevices();
 	  setTimeout(readFirmwareVersions, 10000);
@@ -3048,8 +3048,8 @@ function addIoBrokerStatesForInstance(deviceId, classId, instanceId)
 	  addStateIoBroker(CONTROLLER_FKT_VERSION, 'string', 'text', deviceId, classId, instanceId, false, true, firmwareTypes[deviceId]+" "+moduleVersions[deviceId]);
 	  addStateIoBroker(CONTROLLER_FKT_RESET, 'boolean', 'button', deviceId, classId, instanceId, true, false);
 
-	  addStateIoBroker(CONTROLLER_CFG_NEWEST_FIRMWARE, 'string', 'text', deviceId, classId, instanceId, false, true,"",CHANNEL_CONFIG);
-	  addStateIoBroker(CONTROLLER_CFG_UPDATE_FIRMWARE, 'string', 'text', deviceId, classId, instanceId, true, false,"to_update_enter_the_word:UPDATE",CHANNEL_CONFIG);
+	  //addStateIoBroker(CONTROLLER_CFG_NEWEST_FIRMWARE, 'string', 'text', deviceId, classId, instanceId, false, true,"",CHANNEL_CONFIG);
+	  //addStateIoBroker(CONTROLLER_CFG_UPDATE_FIRMWARE, 'string', 'text', deviceId, classId, instanceId, true, false,"to_update_enter_the_word:UPDATE",CHANNEL_CONFIG);
    }
    else if (classId == CLASS_ID_SCHALTER)
    {
