@@ -2,7 +2,7 @@
 /* jslint node: true */
 "use strict";
 
-var herm=true;
+var herm=false;
 
 // always required: utils
 var utils = require('@iobroker/adapter-core');
@@ -468,9 +468,9 @@ function sendNextQueueDatagram()
 
 function setStateIoBroker(id, value, forceUpdate=false) 
 {
-	if (typeof ioBrokerStates[id]!="undefined" && (ioBrokerStates[id]!=value || forceUpdate))
+	if (typeof ioBrokerStates[id]!="undefined" && (""+ioBrokerStates[id]!=""+value || forceUpdate))
 	{
-	  debug("setState "+id+" "+ioBrokerStates[id]+" -> "+value);
+	  debug("setState "+id+" "+ioBrokerStates[id]+" -> "+value+" - forceUpdate = "+forceUpdate);
       ioBrokerStates[id] = value;
       adapter.setState(id, {val: value, ack: true});
 	}
