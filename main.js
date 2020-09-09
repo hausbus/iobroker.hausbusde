@@ -2,7 +2,7 @@
 /* jslint node: true */
 "use strict";
 
-var herm=true;
+var herm=false;
 
 // always required: utils
 var utils = require('@iobroker/adapter-core');
