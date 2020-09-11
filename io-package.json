@@ -1,8 +1,16 @@
 {
     "common": {
         "name": "hausbusde",
-        "version": "0.1.1",
+        "version": "0.1.3",
         "news": {
+            "0.1.3": {
+                "en": "supporting lan bridge",
+                "de": "supporting lan bridge"
+            },
+            "0.1.2": {
+                "en": "first public version",
+                "de": "first public version"
+            },
             "0.1.1": {
                 "en": "preparation for catalog publish",
                 "de": "preparation for catalog publish"

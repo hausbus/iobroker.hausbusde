@@ -35,6 +35,9 @@ The HausBusDe adapter is ready to use without further configurations. It is auto
 <br>
 
 ## Changelog
+### 0.1.3 (2020-09-11)
+* (hausbusde) supporting lan bridge
+
 ### 0.1.2 (2020-09-06)
 * (hausbusde) first public version
 
