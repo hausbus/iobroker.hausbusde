@@ -32,7 +32,6 @@
         "loglevel": "info",
         "type": "hardware",
         "connectionType": "local",
-		"noConfig": "true",
         "keywords": [
             "Smarthome",
             "Relaismodul",
