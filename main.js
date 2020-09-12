@@ -475,7 +475,7 @@ function setStateIoBroker(id, value, forceUpdate=false)
       ioBrokerStates[id] = value;
       adapter.setState(id, {val: value, ack: true});
 	}
-	//else warn("übersprungen: setState "+id+" "+ioBrokerStates[id]+" -> "+value);
+	else warn("übersprungen: setState "+id+" "+ioBrokerStates[id]+" -> "+value);
 }
 
 // handle incomming messages
@@ -1753,9 +1753,9 @@ function hwSchalterReceivedEvents(sender, receiver, functionId, message, dataLen
     info("relay event "+event+" <- "+objectIdToString(sender));	
 	
 	var newState="";
-	if (event=="evOff") newState="false";
-	else if (event=="evToggle") newState="true";
-	else if (event=="evOn") newState="true";
+	if (event=="evOff") newState=false;
+	else if (event=="evToggle") newState=true;
+	else if (event=="evOn") newState=true;
 	else return;
 	
 	var myId = getIoBrokerId(deviceId, CLASS_ID_SCHALTER, instanceId, SCHALTER_FKT_ON_OFF);
@@ -1779,9 +1779,9 @@ function hwSchalterReceivedStatus(sender, receiver, message, dataLength)
 
 	info("relay status: "+state+" <- "+objectIdToString(sender));
 	
-	var newState="";
-	if (byteState==0) newState="false";
-	else if (byteState==1) newState="true";
+	var newState;
+	if (byteState==0) newState=false;
+	else if (byteState==1) newState=true;
 	else return;
 	
 	var myId = getIoBrokerId(deviceId, CLASS_ID_SCHALTER, instanceId, SCHALTER_FKT_ON_OFF);
@@ -2281,8 +2281,8 @@ function hwLedReceivedEvents(sender, receiver, functionId, message, dataLength)
 	info("output event: "+event+" <- "+objectIdToString(sender));
 	
 	var newState="";
-	if (event=="evOff") newState="false";
-	else if (event=="evOn" || event=="evBlink") newState="true";
+	if (event=="evOff") newState=false;
+	else if (event=="evOn" || event=="evBlink") newState=true;
 		
 	if (newState!="")
 	{
