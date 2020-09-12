@@ -475,7 +475,7 @@ function setStateIoBroker(id, value, forceUpdate=false)
       ioBrokerStates[id] = value;
       adapter.setState(id, {val: value, ack: true});
 	}
-	else warn("übersprungen: setState "+id+" "+ioBrokerStates[id]+" -> "+value);
+	//else warn("übersprungen: setState "+id+" "+ioBrokerStates[id]+" -> "+value);
 }
 
 // handle incomming messages
