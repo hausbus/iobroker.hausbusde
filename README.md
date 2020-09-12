@@ -47,6 +47,7 @@ The HausBusDe adapter is ready to use without further configurations. It is auto
 <br>
 <br>
 <br>
+
 ## License
 The MIT License (MIT)
 
