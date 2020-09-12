@@ -44,7 +44,9 @@ The HausBusDe adapter is ready to use without further configurations. It is auto
 ### 0.1.2 (2020-09-06)
 * (hausbusde) first public version
 
-
+<br>
+<br>
+<br>
 ## License
 The MIT License (MIT)
 
