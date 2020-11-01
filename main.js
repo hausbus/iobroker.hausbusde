@@ -2933,6 +2933,7 @@ function hwControllerReceivedConfiguration(sender, receiver, message, dataLength
 		else if (fcke==0x1A) moduleId = MODUL_ID_2_TASTER;
 		else if (fcke==0x1B) moduleId = MODUL_ID_1_TASTER;
 		else if (fcke==0x20) moduleId = MODUL_ID_32_IO;
+		else if (fcke==0x27) moduleId = MODUL_ID_8_DIMMER;
 	}
 	else if (firmwareType == FIRMWARE_ID_SD485)
 	{
@@ -4108,7 +4109,7 @@ function initModulesClassesInstances()
 	INSTANCES[MODUL_ID_8_DIMMER]["*"][CLASS_ID_DIMMER][8]="Dimmer 08";
 
 	INSTANCES[MODUL_ID_8_DIMMER]["*"][CLASS_ID_SCHALTER]={};
-	INSTANCES[MODUL_ID_8_DIMMER]["*"][CLASS_ID_SCHALTER][23]="Rote_Modul_LED";
+	INSTANCES[MODUL_ID_8_DIMMER]["*"][CLASS_ID_SCHALTER][210]="Rote_Modul_LED";
 
     INSTANCES[MODUL_ID_8_DIMMER]["*"][CLASS_ID_TASTER]={};
 	INSTANCES[MODUL_ID_8_DIMMER]["*"][CLASS_ID_TASTER][98]="Eingang_01";
