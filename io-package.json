@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "hausbusde",
-        "version": "0.1.4",
+        "version": "0.1.5",
         "news": {
+		    "0.1.5": {
+                "en": "preparing release",
+                "de": "preparing release"
+            },
             "0.1.4": {
                 "en": "fixed invalid string value for relay events",
                 "de": "fixed invalid string value for relay events"

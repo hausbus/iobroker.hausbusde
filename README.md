@@ -35,6 +35,9 @@ The HausBusDe adapter is ready to use without further configurations. It is auto
 <br>
 
 ## Changelog
+### 0.1.5 (2020-11-01)
+* (hausbusde) just some preparations for the first official release
+
 ### 0.1.4 (2020-09-12)
 * (hausbusde) fixed invalid string value for relay events
 
