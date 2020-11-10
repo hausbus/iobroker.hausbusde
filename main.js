@@ -281,50 +281,58 @@ function main()
 
 function readFirmwareVersions()
 {
-  for (var firmwareId in FIRMWARE_IDS) 
-  {
-	  var firmwareName = FIRMWARE_IDS[firmwareId];
-	  if (typeof firmwareName!="string" || firmwareName.length<2)
-		  continue;
-	  if (firmwareName == FIRMWARE_ID_S0_Reader)
-		  continue;
+  require('dns').resolve('www.haus-bus.de', function(err) {
+    if (err) debug("no internet connection");
+    else 
+    {
+	  debug("internet connection is available");
+	  
+      for (var firmwareId in FIRMWARE_IDS) 
+      {
+    	  var firmwareName = FIRMWARE_IDS[firmwareId];
+	      if (typeof firmwareName!="string" || firmwareName.length<2)
+    		  continue;
+	      if (firmwareName == FIRMWARE_ID_S0_Reader)
+    		  continue;
 
-	  readFirmwareVersionFor(firmwareId, firmwareName);
-  }
+	      readFirmwareVersionFor(firmwareId, firmwareName);
+	  }
+    }
+  });
 }
 
 function readFirmwareVersionFor(firmwareId, firmwareName)
 {
-      var options = 
-      {
-        host: 'www.haus-bus.de',
-        path: '/'+firmwareName+'.chk'
-      };
+    var options = 
+    {
+      host: 'www.haus-bus.de',
+      path: '/'+firmwareName+'.chk'
+    };
    
-      http.request(options, function(response) 
+    http.request(options, function(response) 
+    {
+      var str = '';
+      response.on('data', function (chunk) {str += chunk;});
+      response.on('end', function () 
       {
-        var str = '';
-        response.on('data', function (chunk) {str += chunk;});
-        response.on('end', function () 
-    	{
-		  var parts = str.split("-");
+		var parts = str.split("-");
 		  
-		  if (typeof onlineVersions[firmwareId]=="undefined") onlineVersions[firmwareId]={};
-		  onlineVersions[firmwareId].version = (""+parts[0]).trim();
-		  onlineVersions[firmwareId].date = (""+parts[1]).trim();
-		  info("Online version "+firmwareName+": "+str);
+		if (typeof onlineVersions[firmwareId]=="undefined") onlineVersions[firmwareId]={};
+		onlineVersions[firmwareId].version = (""+parts[0]).trim();
+		onlineVersions[firmwareId].date = (""+parts[1]).trim();
+		info("Online version "+firmwareName+": "+str);
 		  
-          for (var deviceId in firmwareTypes) 
-          {
-		     var myFirmwareId = FIRMWARE_IDS[firmwareTypes[deviceId]];
-			 if (myFirmwareId == firmwareId)
-			 {
-		       var myId = getIoBrokerId(deviceId,CLASS_ID_CONTROLLER,1,CONTROLLER_CFG_NEWEST_FIRMWARE, CHANNEL_CONFIG);
-		       setStateIoBroker(myId, firmwareName+" "+str, CHANNEL_CONFIG);
-			 }
-		  }
-		});
-	  }).end();
+        for (var deviceId in firmwareTypes) 
+        {
+		   var myFirmwareId = FIRMWARE_IDS[firmwareTypes[deviceId]];
+		   if (myFirmwareId == firmwareId)
+		   {
+		     var myId = getIoBrokerId(deviceId,CLASS_ID_CONTROLLER,1,CONTROLLER_CFG_NEWEST_FIRMWARE, CHANNEL_CONFIG);
+		     setStateIoBroker(myId, firmwareName+" "+str, CHANNEL_CONFIG);
+		   }
+		}
+	  });
+	}).end();
 }	  
 
 function checkAlive()

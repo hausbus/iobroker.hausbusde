@@ -35,7 +35,8 @@ The HausBusDe adapter is ready to use without further configurations. It is auto
 <br>
 
 ## Changelog
-### 0.1.6 (2020-11-10)
+### 0.1.7 (2020-11-10)
+* (hausbusde) fixed adapter restart if no internet connection is available
 * (hausbusde) support for new 8 channel relay module and new 230V dimmer
 
 ### 0.1.5 (2020-11-01)

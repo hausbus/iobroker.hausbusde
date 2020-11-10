@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "hausbusde",
-        "version": "0.1.6",
+        "version": "0.1.7",
         "news": {
+		    "0.1.7": {
+                "en": "fixed adapter restart if no internet connection is available",
+                "de": "fixed adapter restart if no internet connection is available"
+            },
 		    "0.1.6": {
                 "en": "support for 8 channel relay module and new 230V dimmer",
                 "de": "support for 8 channel relay module and new 230V dimmer"
