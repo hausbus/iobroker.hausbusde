@@ -36,7 +36,7 @@ The HausBusDe adapter is ready to use without further configurations. It is auto
 
 ## Changelog
 ### 0.1.6 (2020-11-10)
-* (hausbusde) support for new 8 channel relay module
+* (hausbusde) support for new 8 channel relay module and new 230V dimmer
 
 ### 0.1.5 (2020-11-01)
 * (hausbusde) just some preparations for the first official release

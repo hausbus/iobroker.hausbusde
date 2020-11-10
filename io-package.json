@@ -4,8 +4,8 @@
         "version": "0.1.6",
         "news": {
 		    "0.1.6": {
-                "en": "support for 8 channel relay module",
-                "de": "support for 8 channel relay module"
+                "en": "support for 8 channel relay module and new 230V dimmer",
+                "de": "support for 8 channel relay module and new 230V dimmer"
             },"0.1.5": {
                 "en": "preparing release",
                 "de": "preparing release"
