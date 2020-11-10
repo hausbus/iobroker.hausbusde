@@ -1,9 +1,12 @@
 {
     "common": {
         "name": "hausbusde",
-        "version": "0.1.5",
+        "version": "0.1.6",
         "news": {
-		    "0.1.5": {
+		    "0.1.6": {
+                "en": "support for 8 channel relay module",
+                "de": "support for 8 channel relay module"
+            },"0.1.5": {
                 "en": "preparing release",
                 "de": "preparing release"
             },
