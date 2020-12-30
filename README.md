@@ -2,7 +2,7 @@
 IO Broker Adapter that supports all haus-bus.de components.<br>
 For a documentation about the supported hardware and IO Broker integration please check<br>www.haus-bus.de/iobroker
 
-## Installation
+## Installation <a name="installation"></a>
 <!--You can either install the adapter via the ioBroker web interface or on your local machine via npm.-->
 This adapter is actually in pilot phase and not yet included in the official ioBroker catalog. If you are facing any problems or bugs please contact info@haus-bus.de<br>
 The adapter can be installed from GIT in the following way:<br>
