@@ -35,7 +35,7 @@ The HausBusDe adapter is ready to use without further configurations. It is auto
 <br>
 
 ## Changelog
-### 0.1.7 (2021-02-08)
+### 0.1.8 (2021-02-08)
 * (hausbusde) fixed backlight bug for push buttons
 
 ### 0.1.7 (2020-11-10)
