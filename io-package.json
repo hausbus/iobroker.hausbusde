@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "hausbusde",
-        "version": "0.1.7",
+        "version": "0.1.8",
         "news": {
+		    "0.1.8": {
+                "en": "fixed backlight bug for push buttons",
+                "de": "fixed backlight bug for push buttons"
+            },
 		    "0.1.7": {
                 "en": "fixed adapter restart if no internet connection is available",
                 "de": "fixed adapter restart if no internet connection is available"

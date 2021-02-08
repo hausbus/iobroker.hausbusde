@@ -35,6 +35,9 @@ The HausBusDe adapter is ready to use without further configurations. It is auto
 <br>
 
 ## Changelog
+### 0.1.7 (2021-02-08)
+* (hausbusde) fixed backlight bug for push buttons
+
 ### 0.1.7 (2020-11-10)
 * (hausbusde) fixed adapter restart if no internet connection is available
 * (hausbusde) support for new 8 channel relay module and new 230V dimmer
