@@ -2066,6 +2066,7 @@ function hwLogicalButtonOff(receiverObjectId)
 	var data = [];
 	var pos=0;
 	data[pos++]=2; // Funktion ID
+	wordToByteArray(0, data, pos); pos+=2;
 	
 	sendHausbusUdpMessage(receiverObjectId, data, myObjectId);
 }
@@ -2081,6 +2082,7 @@ function hwLogicalButtonOn(brightness, duration, receiverObjectId)
 	data[pos++]=3; // Funktion ID
 	data[pos++]=brightness;
 	wordToByteArray(duration, data, pos); pos+=2;
+	wordToByteArray(0, data, pos); pos+=2;
 	
 	sendHausbusUdpMessage(receiverObjectId, data, myObjectId);
 }
