@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "hausbusde",
-        "version": "0.1.8",
+        "version": "0.1.9",
         "news": {
+		    "0.1.9": {
+                "en": "support for 8 channel shutter module",
+                "de": "support for 8 channel shutter module"
+            },
 		    "0.1.8": {
                 "en": "fixed backlight bug for push buttons",
                 "de": "fixed backlight bug for push buttons"

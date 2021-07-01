@@ -35,6 +35,9 @@ The HausBusDe adapter is ready to use without further configurations. It is auto
 <br>
 
 ## Changelog
+### 0.1.9 (2021-07-01)
+* (hausbusde) support for 8 channel shutter module
+
 ### 0.1.8 (2021-02-08)
 * (hausbusde) fixed backlight bug for push buttons
 
