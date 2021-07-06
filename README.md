@@ -36,6 +36,8 @@ The HausBusDe adapter is ready to use without further configurations. It is auto
 
 ## Changelog
 ### 0.1.9 (2021-07-01)
+* (hausbusde) replaced all blanks in object names by underscores
+### 0.1.9 (2021-07-01)
 * (hausbusde) support for 8 channel shutter module
 
 ### 0.1.8 (2021-02-08)
