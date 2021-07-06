@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "hausbusde",
-        "version": "0.1.9",
+        "version": "0.1.10",
         "news": {
+		    "0.1.10": {
+                "en": "replaced all blanks in object names by underscores",
+                "de": "replaced all blanks in object names by underscores"
+            },{
 		    "0.1.9": {
                 "en": "support for 8 channel shutter module",
                 "de": "support for 8 channel shutter module"
